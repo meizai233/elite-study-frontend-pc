@@ -6,6 +6,7 @@
 const svgCaptcha = require("svg-captcha");
 const redisConfig = require("../config/redisConfig");
 const { sendMsgCode } = require("../config/aliyunMessage");
+const dayjs = require("dayjs");
 
 const NotifyService = {
   captcha: async (key, type) => {
@@ -28,8 +29,14 @@ const NotifyService = {
   // 4 发送完手机验证码之后 图形验证码就已经失效了 需要删除
   sendCode: async (mobile, captcha, type, key, randomCode) => {
     // 60秒内不能重复获取
-    if (await redisConfig.exists(`${type}:over:` + mobile)) {
-      return { code: -1, msg: "60秒内不能重复获取" };
+    // 将 检查手机验证码是否过期 和 存储手机验证码 两个操作放在一起
+    // 节约空间 保证原子性
+    if (await redisConfig.exists(`${type}:code:` + mobile)) {
+      let dateRedis = dayjs(Number((await redisConfig.get(`${type}:code:` + mobile)).split("_")[0]));
+      // 若存储时间+60秒小于当前时间 表示过期
+      if (dayjs(Date.now()).diff(dateRedis, "second") <= 60) {
+        return { code: -1, msg: "60秒内不能重复获取" };
+      }
     }
 
     // 是否有图形验证 在redis查找是否存在
@@ -45,12 +52,9 @@ const NotifyService = {
 
     // 发送手机验证码
     let codeRes = (await sendMsgCode(mobile, randomCode)).data;
-    // 存入redis
-    redisConfig.set(`${type}:code:` + mobile, randomCode, 600);
-
-    // 在over list里放1表示是否过期
-    // 存60秒判断的key
-    redisConfig.set(`${type}:over:` + mobile, "1", 60);
+    // 把存储时间+验证码一并存入
+    let randomCodeTime = `${Date.now()}_${randomCode}`;
+    redisConfig.set(`${type}:code:` + mobile, randomCodeTime, 600);
 
     // 删除图形验证码
     redisConfig.del(`${type}:captcha:` + key);
