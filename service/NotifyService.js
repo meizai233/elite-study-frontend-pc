@@ -7,6 +7,7 @@ const svgCaptcha = require("svg-captcha");
 const redisConfig = require("../config/redisConfig");
 const { sendMsgCode } = require("../config/aliyunMessage");
 const dayjs = require("dayjs");
+const BackCode = require("../utils/BackCode");
 
 const NotifyService = {
   captcha: async (key, type) => {
@@ -35,19 +36,22 @@ const NotifyService = {
       let dateRedis = dayjs(Number((await redisConfig.get(`${type}:code:` + mobile)).split("_")[0]));
       // 若存储时间+60秒小于当前时间 表示过期
       if (dayjs(Date.now()).diff(dateRedis, "second") <= 60) {
-        return { code: -1, msg: "60秒内不能重复获取" };
+        return BackCode.buildResult(CodeEnum.CODE_LIMITED);
       }
     }
 
     // 是否有图形验证 在redis查找是否存在
     if (!(await redisConfig.exists(`${type}:captcha:` + key))) {
-      return { code: -1, msg: "请发送图形验证码" };
+      return BackCode.buildError({ msg: "请发送图形验证码" });
+    }
+    if (!captcha) {
+      return BackCode.buildError({ msg: "缺少captcha参数" });
     }
 
     // 对比用户的图形验证码和redis储存的是否一致
     let captchaRedis = await redisConfig.get(`${type}:captcha:` + key);
     if (!(captcha.toLowerCase() === captchaRedis.toLowerCase())) {
-      return { code: -1, msg: "图形验证码错误" };
+      return BackCode.buildError({ msg: "图形验证码错误" });
     }
 
     // 发送手机验证码
@@ -60,9 +64,9 @@ const NotifyService = {
     redisConfig.del(`${type}:captcha:` + key);
 
     if (codeRes.code == "200") {
-      return { code: 0, msg: "发送成功" };
+      return BackCode.buildSuccessAndMsg({ msg: "发送成功" });
     } else {
-      return { code: -1, msg: "发送失败" };
+      return BackCode.buildError({ msg: "发送失败" });
     }
   },
 };
