@@ -13,26 +13,24 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // 用户认证中间件
-// 待办 不知道这个中间件是干嘛的
 // 这个中间件会解析和验证请求头中的 JWT，并将其解码后的用户信息添加到 req.user 对象上
 // Authorization: Bearer <your_jwt_token>
-// app.use(
-//   jwt({ secret: jwtSecretKey, algorithms: ["HS256"] }).unless({
-//     path: [
-//       /^\/api\/user\/v1\/register/,
-//       /^\/api\/user\/v1\/login/, //登录
-//       "/test",
-//     ],
-//   })
-// );
+app.use(
+  jwt({ secret: jwtSecretKey, algorithms: ["HS256"] }).unless({
+    path: [
+      /^\/api\/notify\/v1/, // 验证码通知接口排除
+      /^\/api\/user\/v1\/register/, // 验证码通知接口排除
+    ],
+  })
+);
 
-app.get("/test", async (req, res) => {
-  const resData = await DB.account.findAll();
-  res.send(resData);
-});
-
+// 验证码相关接口
 const notifyRouter = require("./router/notify.js");
 app.use("/api/notify/v1", notifyRouter);
+
+// 用户相关接口
+const userRouter = require("./router/user.js");
+app.use("/api/user/v1", userRouter);
 
 // 错误中间件
 app.use((err, req, res, next) => {
