@@ -1,3 +1,7 @@
+## 技术栈
+
+- Nuxt + Unocss + Express
+
 ## 目标功能
 
 - [] 有效期内验证码 - 缓存至 redis
