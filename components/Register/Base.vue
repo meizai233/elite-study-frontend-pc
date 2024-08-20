@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 // message非组件 需要显示引入
 import { message } from "ant-design-vue";
+import { register } from "~/api/account";
+import { sendCode } from "~/api/notify";
 
 // $到底是什么 待办
 const { changeToFinish } = $(useModel());
@@ -17,7 +19,7 @@ const resetCaptchaSrc = () => {
 };
 
 // 获取手机验证码
-const getCode = () => {
+const getCode = async () => {
   // 手机号校验
   if (registerCurrent.phone) {
     const phoneReg = /^[1][3,4,5,7,8][0-9]{9}$/;
@@ -39,9 +41,14 @@ const getCode = () => {
   /**
    * 手机验证码接口逻辑
    */
-  isDisable = true;
-  countDownFun();
-  message.success("发送手机验证码成功");
+  const data = await sendCode(registerCurrent.phone, registerCurrent.captcha, "register");
+  if (data.code === 0) {
+    isDisable = true;
+    countDownFun();
+    message.success("发送手机验证码成功");
+  } else {
+    resetCaptchaSrc();
+  }
 };
 
 // 验证码倒计时的逻辑
@@ -60,7 +67,7 @@ const countDownFun = () => {
 };
 
 // 立即注册按钮
-const onRegisterClick = () => {
+const onRegisterClick = async () => {
   if (!registerCurrent.code) {
     message.warn("请先发送手机验证码");
     return;
@@ -74,6 +81,15 @@ const onRegisterClick = () => {
   /**
    * 请求接口逻辑
    */
+  const data = await register({ phone: registerCurrent.phone, code: registerCurrent.code });
+  if (data.code === 0) {
+    // 注册完成
+    clearInfo();
+    changeToFinish();
+  } else {
+    resetCaptchaSrc();
+  }
+
   clearInfo();
   changeToFinish();
 };
@@ -130,7 +146,7 @@ onBeforeUnmount(() => {
         <a-form-item name="-accept">
           <a-checkbox v-model:checked="registerCurrent.accept">
             <div flexc items-center text-13px>
-              <div>同意小滴课堂</div>
+              <div>同意优研平台</div>
               <a size="small" type="link" text-13px p0 m0 href="/agreementPage" color="#169bd5">《隐私策略》</a>
             </div>
           </a-checkbox>
