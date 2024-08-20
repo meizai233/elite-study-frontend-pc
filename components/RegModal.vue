@@ -1,5 +1,5 @@
 <template>
-  <div class="reg-modal">
+  <div class="reg-modal" v-if="registerModel.base">
     <div class="bg">
       <div class="content wfull flex">
         <!-- 背景图 -->
@@ -15,7 +15,7 @@
         <div pt-36px px-50px flex="~ col" w-400px relative>
           <div justify-between flex wfull>
             <span text-20px font-600 color="#404040">快速注册</span>
-            <img src="/images/svg/close_icon.svg" class="cursor-pointer select-none w-20px! h-20px!" />
+            <img src="/images/svg/close_icon.svg" class="cursor-pointer select-none w-20px! h-20px!" @click="closeRegModel" />
           </div>
           <slot />
         </div>
@@ -24,7 +24,16 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+const { registerModel } = $(useModel());
+
+const emit = defineEmits(["cancel"]);
+
+const closeRegModel = () => {
+  registerModel.base = false;
+  emit("cancel");
+};
+</script>
 
 <style lang="less" scoped>
 .reg-modal {

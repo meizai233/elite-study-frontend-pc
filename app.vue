@@ -5,6 +5,9 @@
 </template>
 
 <script setup>
+// 待办 为什么要引入这个
+import "ant-design-vue/es/message/style/css";
+
 useHead({
   title: "优研平台",
   meta: [

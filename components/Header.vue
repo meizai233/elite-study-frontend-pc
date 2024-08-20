@@ -14,17 +14,30 @@
       <div>
         <div class="login-or-registry" flexc>
           <span mr-8>登录</span>
-          <span class="register"> 注册 </span>
+          <span class="register" @click="registerModel.base = true"> 注册 </span>
         </div>
       </div>
     </div>
-    <RegModal>
-      <RegisterBase></RegisterBase>
+    <RegModal @cancel="onCancel">
+      <RegisterBase :registerCurrent="registerCurrent"></RegisterBase>
     </RegModal>
+    <RegisterFinish></RegisterFinish>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+const { registerModel } = $(useModel());
+// 定义注册的初始表单数据
+const registerCurrent = reactive({
+  phone: "",
+  captcha: "",
+  code: "",
+  accept: false,
+});
+const onCancel = () => {
+  (registerCurrent.phone = ""), (registerCurrent.captcha = ""), (registerCurrent.code = ""), (registerCurrent.accept = false);
+};
+</script>
 
 <style lang="less" scoped>
 .header-container {
