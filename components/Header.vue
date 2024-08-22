@@ -13,20 +13,24 @@
       <HeaderSearch />
       <div>
         <div class="login-or-registry" flexc>
-          <span mr-8>登录</span>
+          <span mr-8 @click="loginModel = true">登录</span>
           <span class="register" @click="registerModel.base = true"> 注册 </span>
         </div>
       </div>
     </div>
+    <!-- 注册弹窗 -->
     <RegModal @cancel="onCancel">
+      <!-- 注册表单 -->
       <RegisterBase :registerCurrent="registerCurrent"></RegisterBase>
     </RegModal>
+    <!-- 注册完成 -->
     <RegisterFinish></RegisterFinish>
+    <Login />
   </div>
 </template>
 
 <script setup>
-const { registerModel } = $(useModel());
+let { registerModel, loginModel } = $(useModel());
 // 定义注册的初始表单数据
 const registerCurrent = reactive({
   phone: "",

@@ -16,9 +16,12 @@ export const useModel = defineStore("model", () => {
     registerModel.base = false;
     registerModel.finish = true;
   };
+  // 登录弹窗
+  const loginModel = ref(false);
 
   return {
     registerModel,
     changeToFinish,
+    loginModel,
   };
 });
