@@ -1,35 +1,95 @@
 <script lang="ts" setup>
+import { message } from "ant-design-vue";
 
+// 初始值
+const currentInfo = reactive({
+  phone: "",
+  captcha: "",
+  code: "",
+});
+
+// 校验规则
+const rules = {
+  phone: [{ required: true, trigger: "blur", message: "请输入手机号!" }],
+  captcha: [{ required: true, trigger: "blur", message: "请输入图形验证码!" }],
+  code: [{ required: true, trigger: "blur", message: "请输入手机验证码!" }],
+};
+
+// 表单提交
+const onFinish = () => {
+  console.log("登录");
+};
+
+// 图形验证码
+let captchaSrc = $ref(`http://127.0.0.1:8888/api/notify/v1/captcha?type=login&time=${Date.now()}`);
+// 更新图形验证码
+const resetCaptchaSrc = () => {
+  if (captchaSrc.includes("&time")) {
+    captchaSrc = captchaSrc.replace(/&time=[0-9]*/, "&time=" + Date.now());
+  }
+};
+
+// 验证码倒计时的逻辑
+let countDown = $ref(60);
+let timer = $ref(null);
+let isDisable = $ref(false);
+const countDownFun = () => {
+  timer = setInterval(() => {
+    countDown--;
+    if (countDown <= 0) {
+      clearInterval(timer);
+      isDisable = false;
+      countDown = 60;
+    }
+  }, 1000);
+};
+
+// 获取验证码
+const formRef = ref(null);
+const getCode = () => {
+  formRef.value.validate("phone").then(() => {
+    if (!currentInfo.captcha) {
+      message.warn("请输入图形验证码");
+      return;
+    }
+    /**
+     * 短信验证码发送接口
+     */
+    isDisable = true;
+    countDownFun();
+    message.success("发送验证码成功");
+  });
+};
 </script>
 
 <template>
   <div>
-    <a-form autocomplete="off" ref="formRef">
-      <a-form-item name="captchaAccount">
-        <a-input placeholder="请输入账号（手机号或邮箱）" />
+    <a-form autocomplete="off" ref="formRef" :model="currentInfo" @finish="onFinish">
+      <a-form-item name="phone" :rules="rules.phone">
+        <a-input placeholder="请输入手机号" v-model:value="currentInfo.phone" />
       </a-form-item>
 
       <!-- 图形验证码  -->
-      <a-form-item name="loginCaptcha">
+      <a-form-item name="captcha" :rules="rules.captcha">
         <div flex>
-          <a-input placeholder="请输入图形验证码" autoComplete="false">
+          <a-input placeholder="请输入图形验证码" autoComplete="false" v-model:value="currentInfo.captcha">
             <template #suffix>
-              <reload-outlined mr-3px cursor-pointer />
+              <reload-outlined mr-3px cursor-pointer @click="resetCaptchaSrc" />
             </template>
           </a-input>
           <div flex justify-center items-center>
-            <img w-80px h-30px />
+            <img w-80px h-30px :src="captchaSrc" />
           </div>
         </div>
       </a-form-item>
 
       <!-- 手机验证码 -->
-      <a-form-item name="captcha">
-        <a-input placeholder="请输入验证码" autoComplete="false">
+      <a-form-item name="code" :rules="rules.code">
+        <a-input placeholder="请输入验证码" autoComplete="false" v-model:value="currentInfo.code">
           <template #suffix>
             <div>
-              <a-button type="link" size="small" p-0>
-                获取验证码
+              <a-button type="link" size="small" p-0 :disabled="isDisable" @click="getCode">
+                {{ isDisable ? `${countDown}秒后重发` : "获取验证码" }}
               </a-button>
             </div>
           </template>
@@ -38,21 +98,17 @@
 
       <a-form-item>
         <div flex mt-2px text-10px>
-          <p>登录即同意小滴课堂</p>
+          <p>登录即同意优研平台</p>
           <a ml-4px color="#169bd5" target="__blank">《隐私政策》</a>
         </div>
       </a-form-item>
 
       <a-form-item>
-        <button type="submit" bg="#4d555d" class="rounded-full btn center-text-36 w-300px text-white">
-          立即登录
-        </button>
+        <button type="submit" bg="#4d555d" class="rounded-full btn center-text-36 w-300px text-white">立即登录</button>
       </a-form-item>
     </a-form>
-    <Bottom type='login' />
+    <Bottom type="login" />
   </div>
 </template>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

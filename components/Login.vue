@@ -11,9 +11,9 @@
           <img @click="loginModel = false" src="/images/svg/close_icon.svg" class="cursor-pointer select-none w-20px! h-20px!" />
         </div>
         <!-- 登录 - 账号密码 -->
-        <login-account wfull hfull v-show="activeKey === 0" />
+        <login-account wfull hfull v-if="activeKey === 0" />
         <!-- 登录 - 短信验证 -->
-        <login-captcha wfull hfull v-show="activeKey === 1" />
+        <login-captcha wfull hfull v-if="activeKey === 1" />
       </div>
     </div>
   </div>
