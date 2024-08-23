@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-const { changeToForget } = $(useModel());
+import { message } from "ant-design-vue";
+import { login } from "~/api/account";
+let { changeToForget, loginModel } = $(useModel());
+let { switchLoginState } = $(useUser());
+
 // 初始值
 const currentInfo = reactive({
   phone: "",
@@ -13,11 +17,14 @@ const rules = {
 };
 
 // 表单提交
-const onFinish = () => {
-  console.log("登录");
-  /**
-   * 登录接口
-   */
+const onFinish = async () => {
+  // 登录接口
+  const res = await login({ phone: currentInfo.phone, password: currentInfo.password });
+  if (res.code === 0) {
+    switchLoginState(res.data);
+    loginModel = false;
+    message.success("登录成功");
+  }
 };
 </script>
 

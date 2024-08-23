@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 import { message } from "ant-design-vue";
+import { sendCode } from "~/api/notify";
+import { login } from "~/api/account";
+
+let { switchLoginState } = $(useUser());
+let { loginModel } = $(useModel());
 
 // 初始值
 const currentInfo = reactive({
@@ -16,8 +21,13 @@ const rules = {
 };
 
 // 表单提交
-const onFinish = () => {
-  console.log("登录");
+const onFinish = async () => {
+  const res = await login({ phone: currentInfo.phone, code: currentInfo.code });
+  if (res.code === 0) {
+    switchLoginState(res.data);
+    loginModel = false;
+    message.success("登录成功");
+  }
 };
 
 // 图形验证码
@@ -47,17 +57,21 @@ const countDownFun = () => {
 // 获取验证码
 const formRef = ref(null);
 const getCode = () => {
-  formRef.value.validate("phone").then(() => {
+  formRef.value.validate("phone").then(async () => {
     if (!currentInfo.captcha) {
       message.warn("请输入图形验证码");
       return;
     }
-    /**
-     * 短信验证码发送接口
-     */
     isDisable = true;
-    countDownFun();
-    message.success("发送验证码成功");
+    // 短信验证码发送接口
+    const res = await sendCode({ phone: currentInfo.phone, captcha: currentInfo.captcha, type: "login" });
+    if (res.code === 0) {
+      countDownFun();
+      message.success("发送验证码成功");
+    } else {
+      isDisable = false;
+      resetCaptchaSrc();
+    }
   });
 };
 </script>

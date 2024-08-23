@@ -21,6 +21,7 @@ export const useModel = defineStore("model", () => {
   const forgetModel = reactive({
     first: false,
     second: false,
+    phoneCache: "", //临时缓存手机号码
   });
 
   // 打开忘记密码弹窗

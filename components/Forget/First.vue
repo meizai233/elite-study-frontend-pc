@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 const { forgetModel, switchForget } = $(useModel());
+import { sendCode } from "~/api/notify";
+import { message } from "ant-design-vue";
 
 // 初始值
 const currentInfo = reactive({
@@ -14,11 +16,15 @@ const rules = {
 };
 
 // 表单提交
-const onFinish = () => {
+const onFinish = async () => {
   console.log("下一步");
-  /**
-   * 发送短信验证码接口
-   */
+  // 短信验证码发送接口
+  const res = await sendCode({ phone: currentInfo.phone, captcha: currentInfo.captcha, type: "change" });
+  if (res.code === 0) {
+    forgetModel.phoneCache = currentInfo.phone;
+    switchForget();
+    message.success(res.msg);
+  }
   switchForget();
 };
 
