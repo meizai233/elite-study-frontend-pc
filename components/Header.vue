@@ -26,6 +26,7 @@
     <!-- 注册完成 -->
     <RegisterFinish></RegisterFinish>
     <Login />
+    <Forget />
   </div>
 </template>
 

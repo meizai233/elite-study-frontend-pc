@@ -16,6 +16,25 @@ export const useModel = defineStore("model", () => {
     registerModel.base = false;
     registerModel.finish = true;
   };
+
+  // 忘记密码框
+  const forgetModel = reactive({
+    first: false,
+    second: false,
+  });
+
+  // 打开忘记密码弹窗
+  const changeToForget = () => {
+    loginModel.value = false;
+    forgetModel.first = true;
+  };
+
+  // 切换忘记密码（修改密码）到第二步骤（接受验证码）
+  const switchForget = () => {
+    forgetModel.first = !forgetModel.first;
+    forgetModel.second = !forgetModel.second;
+  };
+
   // 登录弹窗
   const loginModel = ref(false);
 
@@ -23,5 +42,8 @@ export const useModel = defineStore("model", () => {
     registerModel,
     changeToFinish,
     loginModel,
+    forgetModel,
+    changeToForget,
+    switchForget,
   };
 });
