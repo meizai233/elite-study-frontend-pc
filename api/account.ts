@@ -1,3 +1,5 @@
+import { IUserInfo } from "~/types/api";
+
 /**
  * 注册接口
  * @param options code:验证码 phone:手机号
@@ -29,4 +31,10 @@ export const forget = async (options: { phone: string; code: string; password: s
     method: "post",
     body: options,
   });
+};
+/**
+ * 获取用户信息
+ */
+export const getUserInfo = async function () {
+  return await useApi<IUserInfo>("/user/v1/detail");
 };
