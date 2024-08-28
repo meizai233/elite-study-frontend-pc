@@ -21,6 +21,6 @@
   display: flex;
   justify-content: center;
   margin: 20px 0;
-  min-height: 68vh;
+  min-height: 74.8vh;
 }
 </style>

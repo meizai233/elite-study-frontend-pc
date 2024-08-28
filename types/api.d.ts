@@ -1,3 +1,14 @@
+export enum CourseLevel {
+  Middle = "MIDDLE",
+  Senior = "SENIOR",
+}
+export enum Player {
+  Hwyun = "HWYUN",
+}
+export enum ProductType {
+  Course = "COURSE",
+}
+
 /**
  * 接口返回基本数据类型
  */
@@ -95,8 +106,8 @@ export interface ProductList {
   player: Player;
   tdk: null;
   ali_zip_url: null;
-  bd_zip_url: null | string;
-  note_url: null | string;
+  bd_zip_url: string;
+  note_url: string;
   del: number;
   gmt_modified: string;
   gmt_create: string;
@@ -105,6 +116,10 @@ export interface ProductList {
   easy_point: string;
   logic_point: string;
 }
+
+/**
+ * 讲师接口返回参数
+ */
 export interface ITeacher {
   id: number;
   name: string;
@@ -118,4 +133,10 @@ export interface ITeacher {
   online: string;
   gmt_create: string;
   gmt_modified: string;
+}
+// 分类查找视频接口返回参数
+export interface IPoductQuery {
+  current_data: ProductList[];
+  total_page: number;
+  total_record: number;
 }

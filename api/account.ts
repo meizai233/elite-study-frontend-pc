@@ -2,36 +2,37 @@ import { IUserInfo } from "~/types/api";
 
 /**
  * 注册接口
- * @param options code:验证码 phone:手机号
+ * @param params code:验证码 phone:手机号
  */
-export const register = async (options: { code: string; phone: string }) => {
+export const register = async (params: { code: string; phone: string }) => {
   return await useApi<null>("/user/v1/register", {
     method: "post",
-    body: options,
+    body: params,
   });
 };
 
 /**
  * 登录接口
- * @param options code:验证码 phone:手机号 password:密码
+ * @param params code:验证码 phone:手机号 password:密码
  */
-export const login = async (options: { phone: string; code?: string; password?: string }) => {
+export const login = async (params: { phone: string; code?: string; password?: string }) => {
   return await useApi<string>("/user/v1/login", {
     method: "post",
-    body: options,
+    body: params,
   });
 };
 
 /**
  * 修改密码接口
- * @param options code:验证码 phone:手机号 password:密码
+ * @param params code:验证码 phone:手机号 password:密码
  */
-export const forget = async (options: { phone: string; code: string; password: string }) => {
+export const forget = async (params: { phone: string; code: string; password: string }) => {
   return await useApi<null>("/user/v1/forget", {
     method: "post",
-    body: options,
+    body: params,
   });
 };
+
 /**
  * 获取用户信息
  */

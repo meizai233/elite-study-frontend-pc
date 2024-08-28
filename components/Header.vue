@@ -7,7 +7,7 @@
           <img src="/images/logo.png" alt="优研平台" title="优研平台" />
         </NuxtLink>
         <NuxtLink to="/">首页</NuxtLink>
-        <NuxtLink>课程中心</NuxtLink>
+        <NuxtLink to="/videoListPage">课程中心</NuxtLink>
         <a target="_blank">云服务器</a>
       </div>
       <HeaderSearch />
