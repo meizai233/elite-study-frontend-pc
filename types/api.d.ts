@@ -12,11 +12,17 @@ export enum ProductType {
 /**
  * 接口返回基本数据类型
  */
-
 export interface IApiBase<T> {
   code: number;
   msg: string;
   data: T;
+}
+/**
+ * 微信二维码接口返回参数
+ */
+export interface IWechat {
+  qrcodeUrl: string;
+  ticket: string;
 }
 /**
  * 课程分类接口返回参数
@@ -85,9 +91,6 @@ export interface ICard {
   gmt_create: string;
   gmt_modified: string;
 }
-/**
- * 课程详情返回参数
- */
 export interface ProductList {
   id: number;
   title: string;
@@ -134,9 +137,86 @@ export interface ITeacher {
   gmt_create: string;
   gmt_modified: string;
 }
-// 分类查找视频接口返回参数
+
+/**
+ * 分类查找视频接口返回参数
+ */
 export interface IPoductQuery {
   current_data: ProductList[];
   total_page: number;
   total_record: number;
+}
+/**
+ * 视频详情接口返回参数
+ */
+export interface IVideoDitails {
+  id: number;
+  title: string;
+  cover_img: string;
+  old_amount: string;
+  amount: string;
+  summary: string;
+  detail: string;
+  product_type: string;
+  uv: number;
+  buy_num: number;
+  teacher_id: number;
+  course_level: string;
+  hour: number;
+  episode_num: number;
+  player: string;
+  tdk: string;
+  ali_zip_url: null;
+  bd_zip_url: string;
+  note_url: string;
+  del: number;
+  gmt_modified: string;
+  gmt_create: string;
+  total_point: string;
+  content_point: string;
+  easy_point: string;
+  logic_point: string;
+  teacherDetail: TeacherDetail;
+}
+export interface TeacherDetail {
+  id: number;
+  name: string;
+  profile: string;
+  head_img: string;
+  wechat_qrcode: string;
+  pay_qrcode: string;
+  point: number;
+  remark: null;
+  phone: string;
+  online: string;
+  gmt_create: string;
+  gmt_modified: string;
+}
+
+/**
+ * 最近在学接口返回参数
+ */
+export interface IlatestLearn {
+  id: number;
+  account_id: number;
+  username: string;
+  user_head_img: string;
+  out_trade_no: string;
+  transaction_no: null;
+  order_state: string;
+  total_amount: string;
+  pay_amount: string;
+  pay_type: null;
+  product_id: number;
+  product_type: string;
+  product_title: string;
+  product_img: string;
+  ip: string;
+  is_comment: number;
+  discount_type: null;
+  discount_amount: null;
+  del: number;
+  notify_time: null;
+  gmt_create: string;
+  gmt_modified: string;
 }

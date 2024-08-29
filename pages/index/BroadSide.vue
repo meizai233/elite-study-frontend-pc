@@ -35,7 +35,7 @@ const data = computed(() => {
     <div class="account-code" v-show="account && (indexShow === 1 || indexShow === 0)">
       <div>
         <div class="text">关注优研平台公众号</div>
-        <img src="/images/OfficialAccounts.jpg" alt="" />
+        <img src="/images/elite_gzh.jpg" alt="" />
       </div>
       <div class="bg"></div>
     </div>

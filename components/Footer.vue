@@ -24,7 +24,7 @@ import { message } from "ant-design-vue";
           </div>
         </div>
         <div flex class="footer-qr">
-          <img src="/images/xdclass_gzh.png" class="w80px! h80px" mr-16px />
+          <img src="/images/elite_gzh.jpg" class="w80px! h80px" mr-16px />
           <div flex justify-center flex-col text-18px font-light text="#4f555d">
             <p>扫码关注</p>
             <p>微信服务号</p>

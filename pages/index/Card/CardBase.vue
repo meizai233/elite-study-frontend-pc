@@ -11,7 +11,7 @@ defineProps<IProps>();
 </script>
 
 <template>
-  <nuxt-link>
+  <nuxt-link :to="`/videoDetailsPage?id=${card.id}`">
     <div class="card-box" cursor-pointer>
       <div class="top">
         <img :src="card.cover_img" />
