@@ -1,10 +1,14 @@
 ## 项目简介
 
-前端项目
+前端项目 + 后端项目
 
 ## 技术栈
 
-- Nuxt + Unocss + Express
+前端 pc 界面
+
+- Nuxt + Unocss
+  后端
+- Node + Express + Sequelize + MySQL + Redis + RabbitMQ
 
 ## 目标功能
 

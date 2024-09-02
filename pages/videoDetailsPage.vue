@@ -2,23 +2,42 @@
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay } from "swiper";
 import { getVideoDetails, getLatestLearn } from "~/api/product";
-
+import OutLine from "./videoDetailsPage/OutLine.vue";
+// 课程等级映射
 const levelMap = { JUNIOR: "初级", MIDDLE: "中级", SENIOR: "高级" };
 
 const { checkPay, videoInfor } = $(useVideo());
 
+// tab选中状态
+const activeKey = $ref(0);
+
+// 课程id
 const realVideoId = $computed(() => {
   return Number(useRoute().query.id) || 1;
 });
+// 检查课程是否购买
 checkPay(realVideoId);
 
 // 课程详情数据
 const detailsData = reactive((await getVideoDetails(realVideoId)).data);
+// 将课程的评分数据暂存在pinia
+videoInfor.videoPrice = Number(detailsData.amount);
+videoInfor.easyPoint = Number(detailsData.easy_point);
+videoInfor.logicPoint = Number(detailsData.logic_point);
+videoInfor.contentPoint = Number(detailsData.content_point);
 
 // 学员学习动态
 const latestLearnData = reactive((await getLatestLearn(1)).data);
 
-useHead({ title: "优研平台课堂 - 视频详情页" });
+// 课程介绍海报
+const inlineHtml = (html: string) => {
+  if (html.startsWith("http")) {
+    return `<img src="${html}" />`;
+  }
+  return html;
+};
+// 当前页的title
+useHead({ title: "小滴课堂 - 视频详情页" });
 </script>
 
 <template>
@@ -72,12 +91,32 @@ useHead({ title: "优研平台课堂 - 视频详情页" });
                 <img w-100px h-100px class="rounded-50%" :src="detailsData?.teacherDetail?.head_img" />
                 <div flex flex-col ml-18px justify-center>
                   <div text-24px color="#222222" font-800>{{ detailsData?.teacherDetail?.name }}</div>
-                  <div text-16px color="#404040" mb-12px w-126px>优研平台课堂讲师</div>
+                  <div text-16px color="#404040" mb-12px w-126px>小滴课堂讲师</div>
                 </div>
                 <div ml-35px color="#404040">个人简介： {{ detailsData?.teacherDetail?.profile }}</div>
               </div>
             </div>
-            <!-- 课程详情tab -->
+            <ul mt-41px grid grid-cols-6 ml-65px color="#4f555d" text-16px font-600 class="li" h-53px>
+              <li :class="[activeKey === 0 ? 'active' : '']" @click="activeKey = 0">课程介绍</li>
+              <li :class="[activeKey === 1 ? 'active' : '']" @click="activeKey = 1">课程目录</li>
+              <li :class="[activeKey === 2 ? 'active' : '']" @click="activeKey = 2">用户评价</li>
+              <li :class="[activeKey === 3 ? 'active' : '']" @click="activeKey = 3">课程资料</li>
+            </ul>
+
+            <div>
+              <div v-show="activeKey === 0">
+                <div v-html="inlineHtml(detailsData?.summary)" class="introduce-content"></div>
+              </div>
+              <div v-show="activeKey === 1">
+                <OutLine :id="realVideoId" />
+              </div>
+              <div v-show="activeKey === 2">
+                <UserComment :id="realVideoId" />
+              </div>
+              <div v-show="activeKey === 3">
+                <Materials :id="realVideoId" />
+              </div>
+            </div>
           </div>
         </div>
 
