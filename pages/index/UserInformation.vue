@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LoggedIn from "./Userinformation/LoggedIn.vue";
-import NotLoginIn from "./Userinformation/NotLoggedIn.vue";
+import LoggedIn from "./UserInformation/LoggedIn.vue";
+import NotLoginIn from "./UserInformation/NotLoggedIn.vue";
 
 const { isLogin } = $(useUser());
 </script>

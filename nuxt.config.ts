@@ -1,4 +1,3 @@
-// 按需导入 无需显式导入
 import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 
@@ -20,18 +19,18 @@ export default defineNuxtConfig({
         },
       },
     },
+    // 指定哪些插件不使用ssr渲染
+    ssr: {
+      noExternal: ["moment", "compute-scroll-into-view", "ant-design-vue", "lodash-es", "dayjs"],
+    },
   },
-  unocss: {
-    uno: true,
-    attributify: true,
-    shortcuts: [{ flexc: "flex items-center justify-center" }],
-    rules: [
-      [
-        /^fs-(\d+)$/,
-        ([, d]) => ({
-          "font-size": `${d}px`,
-        }),
-      ],
-    ],
+  // ant-design-vue 源码底层使用了dayjs，打包时更改为es6 module模块
+  alias: {
+    dayjs: "dayjs/esm/",
+  },
+  build: {
+    // 禁用指定的打包优化，本地启动需要删除@babel/runtime
+    // "@babel/runtime"
+    transpile: ["lodash-es"],
   },
 });
