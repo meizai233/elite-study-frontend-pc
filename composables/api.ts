@@ -3,7 +3,9 @@ import type { FetchRequest, FetchOptions } from "ohmyfetch";
 import { message } from "ant-design-vue";
 import { IApiBase } from "~~/types/api";
 
-export const baseUrl = "http://127.0.0.1:8888/api";
+// 部署上云
+// 待办 这里如何确定分发到api了 https可以访问吗
+export const baseUrl = "https://elitestudy.fun/api";
 
 const _useApi = $fetch.create({
   baseURL: baseUrl,
