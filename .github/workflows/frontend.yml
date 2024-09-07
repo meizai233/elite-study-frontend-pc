@@ -80,7 +80,7 @@ jobs:
           pipeline_id="${GITHUB_RUN_ID:-0}"
           tag="v${pipeline_id}-${short_commit}"
           docker build -f docker/frontend.build.Dockerfile -t registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag} .
-          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:v1.0
+          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
 
       #  - name: Get frontend-course-image ID
       #   id: get-frontend-image-id
