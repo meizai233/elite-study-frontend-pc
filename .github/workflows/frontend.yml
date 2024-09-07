@@ -34,7 +34,9 @@ jobs:
 
       - name: Preparation before deployment
         run: |
+          echo "Current User:"
           whoami
+          echo "Listing /var/www:"
           ls -ld /var/www
 
       - name: deploy file to server
