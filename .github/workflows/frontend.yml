@@ -65,10 +65,13 @@ jobs:
       # pipeline_id="${GITHUB_RUN_ID:-0}"
       # tag="v${pipeline_id}-${short_commit}"
       # 记得打镜像
+
+      # nginx记得build
+      # docker build -f docker/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
+
       - name: Build Docker images
         run: |
           docker build -f docker/frontend.build.Dockerfile . -t frontend-course-image
-          docker build -f docker/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
 
       #  - name: Get frontend-course-image ID
       #   id: get-frontend-image-id
@@ -101,10 +104,10 @@ jobs:
           docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:latest
           docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:latest
 
-      - name: Tag and push frontend-course-nginx-image to Aliyun Container Registry
-        run: |
-          docker tag frontend-course-nginx-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
-          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
+      # - name: Tag and push frontend-course-nginx-image to Aliyun Container Registry
+      #   run: |
+      #     docker tag frontend-course-nginx-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
+      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
 
       # - name: Start Docker containers
       #   run: docker-compose -f docker/docker-compose.frontend.yml up -d
