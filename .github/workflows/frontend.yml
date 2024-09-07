@@ -33,6 +33,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Print Dockerfile path
+        run: |
+          echo "Dockerfile path is: $REMOTE_PARENT_TARGET/frontend.build.Dockerfile"
+
+      - name: Build Docker images
+        run: |
+          pwd
+
+          docker build -f $REMOTE_PARENT_TARGET/frontend.build.Dockerfile . -t frontend-course-image
+          docker build -f $REMOTE_PARENT_TARGET/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
+
       - name: Install Dependencies
         run: npm install --force
 
