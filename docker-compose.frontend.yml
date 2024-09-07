@@ -1,0 +1,14 @@
+version: "3.0"
+services:
+  frontend-course:
+    image: frontend-course-image
+    restart: always
+    container_name: frontend-course
+    ports: -3000:3000
+  frontend-course-nginx:
+    image: frontend-course-nginx-image
+    restart: always
+    container_name: frontend-course-nginx
+    ports:
+      - 80:80
+      - 443:443

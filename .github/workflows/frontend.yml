@@ -33,17 +33,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Print Dockerfile path
-        run: |
-          echo "Dockerfile path is: $REMOTE_PARENT_TARGET/frontend.build.Dockerfile"
-
-      - name: Build Docker images
-        run: |
-          pwd
-
-          docker build -f $REMOTE_PARENT_TARGET/frontend.build.Dockerfile . -t frontend-course-image
-          docker build -f $REMOTE_PARENT_TARGET/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
-
       - name: Install Dependencies
         run: npm install --force
 
@@ -69,18 +58,12 @@ jobs:
           docker rmi frontend-course-image || true
           docker rmi frontend-course-nginx-image || true
 
-      - name: Print Dockerfile path
-        run: |
-          echo "Dockerfile path is: $REMOTE_PARENT_TARGET/frontend.build.Dockerfile"
-
       - name: Build Docker images
         run: |
-          pwd
-
-          docker build -f $REMOTE_PARENT_TARGET/frontend.build.Dockerfile . -t frontend-course-image
-          docker build -f $REMOTE_PARENT_TARGET/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
+          docker build -f frontend.build.Dockerfile . -t frontend-course-image
+          docker build -f frontend.nginx.Dockerfile . -t frontend-course-nginx-image
 
       - name: Start Docker containers
-        run: docker-compose -f $REMOTE_PARENT_TARGET/docker-compose.frontend.yml up -d
+        run: docker-compose -f docker-compose.frontend.yml up -d
 
         ## 感觉要先把配置放到服务器中 看看课程在哪里放的 以及问题是放在哪里
