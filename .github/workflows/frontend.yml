@@ -26,15 +26,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Install Dependencies
-        run: npm install --force
+      # - name: Install Dependencies
+      #   run: npm install --force
 
-      - name: Build
-        run: npm run build --if-present
+      # - name: Build
+      #   run: npm run build --if-present
 
       - name: Preparation before deployment
         run: |
-          rm -rf /var/www/elite-study || true
+          whoami
+          ls -ld /var/www
           mkdir -p /var/www/elite-study
           cd /var/www/elite-study
 
@@ -50,8 +51,7 @@ jobs:
       - name: Clean up previous Docker containers
         run: |
           docker stop frontend-course || true
-          whoami
-          ls -ld /var/www
+
           docker stop frontend-course-nginx || true
           docker rm frontend-course || true
           docker rm frontend-course-nginx || true
