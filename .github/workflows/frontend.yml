@@ -61,17 +61,26 @@ jobs:
       # - name: Build Docker Image
       #   run: bash docker/build-docker-image-frontend.sh
 
-      # short_commit=$(git rev-parse --short HEAD)
-      # pipeline_id="${GITHUB_RUN_ID:-0}"
-      # tag="v${pipeline_id}-${short_commit}"
       # 记得打镜像
 
       # nginx记得build
       # docker build -f docker/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
 
-      - name: Build Docker images
+      - name: Login to Aliyun Container Registry (ACR)
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: https://registry.cn-hangzhou.aliyuncs.com
+          region-id: cn-hangzhou
+          username: "${{ secrets.ACR_USERNAME }}"
+          password: "${{ secrets.ACR_PASSWORD }}"
+
+      - name: Build Docker images and Push
         run: |
-          docker build -f docker/frontend.build.Dockerfile . -t frontend-course-image
+          short_commit=$(git rev-parse --short HEAD)
+          pipeline_id="${GITHUB_RUN_ID:-0}"
+          tag="v${pipeline_id}-${short_commit}"
+          docker build -f docker/frontend.build.Dockerfile -t registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag} .
+          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:v1.0
 
       #  - name: Get frontend-course-image ID
       #   id: get-frontend-image-id
@@ -85,24 +94,15 @@ jobs:
       #     IMAGE_ID=$(docker images --format "{{.ID}}" frontend-course-nginx-image)
       #     echo "::set-output name=image_id::$IMAGE_ID"
 
-      - name: Login to Aliyun Container Registry (ACR)
-        uses: aliyun/acr-login@v1
-        with:
-          login-server: https://registry.cn-hangzhou.aliyuncs.com
-          region-id: cn-hangzhou
-          username: "${{ secrets.ACR_USERNAME }}"
-          password: "${{ secrets.ACR_PASSWORD }}"
-
       # 待办 这里镜像号码是可以变的
       # - name: Push Docker Image
       #   run: |
       #     docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
       #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
 
-      - name: Tag and push frontend-course-image to Aliyun Container Registry
-        run: |
-          docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
-          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:v1.0
+      # - name: Tag and push frontend-course-image to Aliyun Container Registry
+      #   run: |
+      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:v1.0
 
       # - name: Tag and push frontend-course-nginx-image to Aliyun Container Registry
       #   run: |
