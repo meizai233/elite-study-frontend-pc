@@ -4,7 +4,7 @@ FROM nginx:1.23.0-alpine
 RUN mkdir -p /etc/nginx/conf/ssl
 
 # 本地配置文件替换远程
-ADD elite-study-frontend-pc/nginx.conf /etc/nginx/nginx/conf
+ADD ./nginx.conf /etc/nginx/nginx/conf
 
 # 本地SSl证书替换远程
 ADD ssl/frontend/elitestudy.fun-frontend.key /etc/nginx/conf/ssl/elitestudy.fun-frontend.key
