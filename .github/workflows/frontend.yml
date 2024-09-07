@@ -49,21 +49,62 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
 
-      - name: Clean up previous Docker containers
-        run: |
-          docker stop frontend-course || true
-          docker stop frontend-course-nginx || true
-          docker rm frontend-course || true
-          docker rm frontend-course-nginx || true
-          docker rmi frontend-course-image || true
-          docker rmi frontend-course-nginx-image || true
+      # - name: Clean up previous Docker containers
+      #   run: |
+      #     docker stop frontend-course || true
+      #     docker stop frontend-course-nginx || true
+      #     docker rm frontend-course || true
+      #     docker rm frontend-course-nginx || true
+      #     docker rmi frontend-course-image || true
+      #     docker rmi frontend-course-nginx-image || true
 
+      # - name: Build Docker Image
+      #   run: bash docker/build-docker-image-frontend.sh
+
+      # short_commit=$(git rev-parse --short HEAD)
+      # pipeline_id="${GITHUB_RUN_ID:-0}"
+      # tag="v${pipeline_id}-${short_commit}"
+      # 记得打镜像
       - name: Build Docker images
         run: |
-          docker build -f frontend.build.Dockerfile . -t frontend-course-image
-          docker build -f frontend.nginx.Dockerfile . -t frontend-course-nginx-image
+          docker build -f docker/frontend.build.Dockerfile . -t frontend-course-image
+          docker build -f docker/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
 
-      - name: Start Docker containers
-        run: docker-compose -f docker-compose.frontend.yml up -d
+      #  - name: Get frontend-course-image ID
+      #   id: get-frontend-image-id
+      #   run: |
+      #     IMAGE_ID=$(docker images --format "{{.ID}}" frontend-course-image)
+      #     echo "::set-output name=image_id::$IMAGE_ID"
 
-        ## 感觉要先把配置放到服务器中 看看课程在哪里放的 以及问题是放在哪里
+      # - name: Get frontend-course-nginx-image ID
+      #   id: get-nginx-image-id
+      #   run: |
+      #     IMAGE_ID=$(docker images --format "{{.ID}}" frontend-course-nginx-image)
+      #     echo "::set-output name=image_id::$IMAGE_ID"
+
+      - name: Login to Aliyun Container Registry (ACR)
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: https://registry.cn-hangzhou.aliyuncs.com
+          region-id: cn-hangzhou
+          username: "${{ secrets.ACR_USERNAME }}"
+          password: "${{ secrets.ACR_PASSWORD }}"
+
+      # 待办 这里镜像号码是可以变的
+      # - name: Push Docker Image
+      #   run: |
+      #     docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
+      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
+
+      - name: Tag and push frontend-course-image to Aliyun Container Registry
+        run: |
+          docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:latest
+          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:latest
+
+      - name: Tag and push frontend-course-nginx-image to Aliyun Container Registry
+        run: |
+          docker tag frontend-course-nginx-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
+          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
+
+      # - name: Start Docker containers
+      #   run: docker-compose -f docker/docker-compose.frontend.yml up -d
