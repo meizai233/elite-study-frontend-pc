@@ -36,8 +36,6 @@ jobs:
         run: |
           whoami
           ls -ld /var/www
-          mkdir -p /var/www/elite-study
-          cd /var/www/elite-study
 
       - name: deploy file to server
         uses: wlixcc/SFTP-Deploy-Action@v1.0
