@@ -25,6 +25,43 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
+      - name: Install Dependencies
       - run: npm install --force
+
+      - name: Build
       - run: npm run build --if-present
-    # - run: npm test
+
+      - name: Preparation before deployment
+        run: |
+          rm -rf /var/www/elite-study || true
+          mkdir -p /var/www/elite-study
+          cd /var/www/elite-study
+
+      - name: deploy file to server
+        uses: wlixcc/SFTP-Deploy-Action@v1.0
+        with:
+          username: "root"
+          server: "${{ secrets.SERVER_IP }}"
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} #引用之前创建好的secret
+          local_path: "./build/*"
+          remote_path: "var/www/elite-study"
+
+      - name: Clean up previous Docker containers
+        run: |
+          docker stop frontend-course || true
+          docker stop frontend-course-nginx || true
+          docker rm frontend-course || true
+          docker rm frontend-course-nginx || true
+          docker rmi frontend-course-image || true
+          docker rmi frontend-course-nginx-image || true
+
+      - name: Build Docker images
+        run: |
+          docker build -f frontend.build.Dockerfile . -t frontend-course-image
+          docker build -f frontend.nginx.Dockerfile . -t frontend-course-nginx-image
+
+      - name: Start Docker containers
+        run: docker-compose -f docker-compose.frontend.yml up -d
+
+        ## 感觉要先把配置放到服务器中 看看课程在哪里放的 以及问题是放在哪里
