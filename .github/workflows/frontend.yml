@@ -50,6 +50,8 @@ jobs:
       - name: Clean up previous Docker containers
         run: |
           docker stop frontend-course || true
+          whoami
+          ls -ld /var/www
           docker stop frontend-course-nginx || true
           docker rm frontend-course || true
           docker rm frontend-course-nginx || true
