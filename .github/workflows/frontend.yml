@@ -49,65 +49,37 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
 
-      # - name: Clean up previous Docker containers
-      #   run: |
-      #     docker stop frontend-course || true
-      #     docker stop frontend-course-nginx || true
-      #     docker rm frontend-course || true
-      #     docker rm frontend-course-nginx || true
-      #     docker rmi frontend-course-image || true
-      #     docker rmi frontend-course-nginx-image || true
-
-      # - name: Build Docker Image
-      #   run: bash docker/build-docker-image-frontend.sh
-
-      # 记得打镜像
-
       # nginx记得build
       # docker build -f docker/frontend.nginx.Dockerfile . -t frontend-course-nginx-image
 
-      - name: Login to Aliyun Container Registry (ACR)
-        uses: aliyun/acr-login@v1
+      # 暂时不需要push到阿里云
+      # - name: Login to Aliyun Container Registry (ACR)
+      #   uses: aliyun/acr-login@v1
+      #   with:
+      #     login-server: https://registry.cn-hangzhou.aliyuncs.com
+      #     region-id: cn-hangzhou
+      #     username: "${{ secrets.ACR_USERNAME }}"
+      #     password: "${{ secrets.ACR_PASSWORD }}"
+
+      # - name: Build Docker images and Push
+      #   run: |
+      #     short_commit=$(git rev-parse --short HEAD)
+      #     pipeline_id="${GITHUB_RUN_ID:-0}"
+      #     tag="v${pipeline_id}-${short_commit}"
+      #     docker build -f docker/frontend.build.Dockerfile -t frontend-course-image .
+      #     docker tag frontend-course-image registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
+      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
+
+      - name: Clean up previous Docker containers and Docker Run
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          login-server: https://registry.cn-hangzhou.aliyuncs.com
-          region-id: cn-hangzhou
-          username: "${{ secrets.ACR_USERNAME }}"
-          password: "${{ secrets.ACR_PASSWORD }}"
-
-      - name: Build Docker images and Push
-        run: |
-          short_commit=$(git rev-parse --short HEAD)
-          pipeline_id="${GITHUB_RUN_ID:-0}"
-          tag="v${pipeline_id}-${short_commit}"
-          docker build -f docker/frontend.build.Dockerfile -t registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag} .
-          docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
-
-      #  - name: Get frontend-course-image ID
-      #   id: get-frontend-image-id
-      #   run: |
-      #     IMAGE_ID=$(docker images --format "{{.ID}}" frontend-course-image)
-      #     echo "::set-output name=image_id::$IMAGE_ID"
-
-      # - name: Get frontend-course-nginx-image ID
-      #   id: get-nginx-image-id
-      #   run: |
-      #     IMAGE_ID=$(docker images --format "{{.ID}}" frontend-course-nginx-image)
-      #     echo "::set-output name=image_id::$IMAGE_ID"
-
-      # 待办 这里镜像号码是可以变的
-      # - name: Push Docker Image
-      #   run: |
-      #     docker tag frontend-course-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
-      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:v1.0
-
-      # - name: Tag and push frontend-course-image to Aliyun Container Registry
-      #   run: |
-      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-image:v1.0
-
-      # - name: Tag and push frontend-course-nginx-image to Aliyun Container Registry
-      #   run: |
-      #     docker tag frontend-course-nginx-image:latest registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
-      #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:frontend-course-nginx-image:latest
-
-      # - name: Start Docker containers
-      #   run: docker-compose -f docker/docker-compose.frontend.yml up -d
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            whoami # 输出当前用户
+            docker stop frontend-course || true # 停止名为 frontend-course 的容器，如果不存在则忽略错误
+            docker rm frontend-course || true # 删除名为 frontend-course 的容器，如果不存在则忽略错误
+            docker rmi frontend-course-image || true # 删除名为 frontend-course-image 的镜像，如果不存在则忽略错误
+            docker build -f docker/frontend.build.Dockerfile -t frontend-course-image . # 根据 Dockerfile 构建新的镜像并标记为 frontend-course-image
+            docker-compose -f docker/docker-compose.frontend.yml up -d # 使用 docker-compose 启动服务，后台运行
