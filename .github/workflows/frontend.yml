@@ -4,15 +4,14 @@
 name: frontend-20240906
 
 on:
+  # 切换分支
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches: ["prod"]
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/prod' # 仅在 prod 分支触发
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [16.x, 18.x]
@@ -80,8 +79,7 @@ jobs:
           script: |
             whoami # 输出当前用户
             cd ${{ secrets.REMOTE_TARGET }} # 进入目标目录
-            docker stop frontend-course > /dev/null 2>&1 || true # 停止名为 frontend-course 的容器，如果不存在则忽略错误
-            docker rm frontend-course > /dev/null 2>&1 || true # 删除名为 frontend-course 的容器，如果不存在则忽略错误
-            docker rmi frontend-course-image || true # 删除名为 frontend-course-image 的镜像，如果不存在则忽略错误
+            docker-compose -f docker/docker-compose.frontend.yml down # 停止并删除所有服务的容器和网络
+            docker-compose -f docker/docker-compose.frontend.yml down --rmi all
             docker build -f docker/frontend.build.Dockerfile -t frontend-course-image . # 根据 Dockerfile 构建新的镜像并标记为 frontend-course-image
             docker-compose -f docker/docker-compose.frontend.yml up -d # 使用 docker-compose 启动服务，后台运行
