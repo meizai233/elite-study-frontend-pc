@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -70,6 +70,7 @@ jobs:
       #     docker tag frontend-course-image registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
       #     docker push registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:${tag}
 
+      # 感觉docker compose停止可能有问题
       - name: Clean up previous Docker containers and Docker Run
         uses: appleboy/ssh-action@v1.0.3
         with:
