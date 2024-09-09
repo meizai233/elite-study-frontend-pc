@@ -7,7 +7,7 @@ WORKDIR /app
 
 # 安装
 RUN npm set registry https://registry.npmmirror.com
-RUN yarn config set registry https://mirrors.cloud.tencent.com/npm/
+RUN yarn config set registry https://registry.yarnpkg.com/
 RUN yarn install
 RUN yarn build
 RUN npm i pm2 -g
