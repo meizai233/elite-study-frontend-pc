@@ -10,6 +10,10 @@
   后端
 - Node + Express + Sequelize + MySQL + Redis + RabbitMQ
 
+小程序端
+
+- uni-app + vue3 + pinia
+
 ## 目标功能
 
 - [x] 有效期内验证码 - 缓存至 redis
@@ -19,6 +23,11 @@
 - [x] github workflow 实现前后端自动化集成和部署（dockerFile + yml 配置文件 + nginx + docker-compose）
 - [x] 搜索功能防抖
 - [ ] 将本地图片请求实现 CDN 加速
+- [ ] 用户上传头像至阿里云 OSS，动静分离，加速图片加载
+- [ ] 小程序/app 端
+  - [ ] 短信验证和图片验证
+- [ ] 后台管理系统
+  - [ ] 管理员权限控制
 
 ## 技术实现
 
