@@ -2,8 +2,14 @@
 import { getCategoryList } from "~/api/category";
 import { queryProductByCid } from "~/api/product";
 import CardContainer from "./index/CardContainer.vue";
+import { getSearchList } from "~/api/search";
 
 const route = useRoute();
+
+// 是否通过搜索跳转过来
+const isSearch = $computed(() => {
+  return route.fullPath.includes("search");
+});
 
 // 当前id
 const currentId = computed(() => {
@@ -16,7 +22,6 @@ const categoryList = reactive((await getCategoryList()).data);
 // 分类列表
 const getSubCategoryList = computed(() => {
   if (currentId.value === "0") {
-    // map之后再拍平
     return categoryList.flatMap((item) => item.subCategoryList);
   } else {
     return categoryList
@@ -49,14 +54,22 @@ const navigateToParser = (key: string, value: string) => {
 
 // 课程列表接口请求
 let data = $ref(
-  (
-    await queryProductByCid({
-      cid: Number(route.query.cid) || undefined,
-      page: Number(route.query.page) || 1,
-      size: 12,
-      cpid: Number(route.query.id) || undefined,
-    })
-  ).data
+  isSearch
+    ? (
+        await getSearchList({
+          title: route.query.search as string,
+          page: Number(route.query.page) || 1,
+          size: 12,
+        })
+      ).data
+    : (
+        await queryProductByCid({
+          cid: Number(route.query.cid) || undefined,
+          page: Number(route.query.page) || 1,
+          size: 12,
+          cpid: Number(route.query.id) || undefined,
+        })
+      ).data
 );
 
 // 分页数据
@@ -64,11 +77,10 @@ const pagination = reactive({
   page: Number(route.query.page) || 1, // 当前页数
   pageSize: 12, // 当前页视频个数
   total: data.total_record, // 当前视频总数
-  cards: data.current_data as any, // 视频列表
+  cards: data.current_data, // 视频列表
 });
 
 // 切换分页
-// Pagination子组件传过来
 const onPaginationChange = (page: number) => {
   navigateToParser("page", page.toString());
 };
@@ -81,7 +93,7 @@ useHead({
 <template>
   <div wfull flexc flex-col>
     <div wfull flexc bg="#f9f9f9">
-      <div class="category" flex flex-col w-1200px>
+      <div class="category" flex flex-col w-1200px v-if="!isSearch">
         <div class="line">
           <span>方向：</span>
           <a-button :type="currentId === '0' ? 'primary' : 'text'" @click="navigateTo(`/videoListPage?id=0`)"> 全部 </a-button>
