@@ -79,7 +79,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             whoami # 输出当前用户
-            find ${{ secrets.REMOTE_TARGET }} -mindepth 1 -delete
             cd ${{ secrets.REMOTE_TARGET }} # 进入目标目录
             docker-compose -f docker/docker-compose.frontend.yml down # 停止并删除所有服务的容器和网络
             docker-compose -f docker/docker-compose.frontend.yml down --rmi all
