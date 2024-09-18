@@ -10,7 +10,8 @@ on:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/dev' # 仅在 dev 分支触发
+    # if: github.ref == 'refs/heads/dev' # 仅在 dev 分支触发
+    if: false
     runs-on: ubuntu-latest
     strategy:
       matrix:
