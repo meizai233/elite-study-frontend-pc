@@ -7,12 +7,30 @@ import { getCardList } from "~/api/card";
 import AliYun from "./index/AliYun.vue";
 import AboutInstructor from "./index/Instructor/AboutInstructor.vue";
 import BroadSide from "./index/BroadSide.vue";
+import { message } from "ant-design-vue";
 
 // 视频卡片列表请求接口
 const cardList = $ref((await getCardList()).data);
+const route = useRoute();
+let { loginModel } = $(useModel());
+const { switchGithubLoginState } = $(useUser());
 
 useHead({
   title: "优研平台 - 首页",
+});
+
+onMounted(() => {
+  // 获取路由查询参数
+  const oauthParam = route.query.oauth;
+  // 如果 oauth 参数为 true，则进行操作
+  if (oauthParam === "1") {
+    // loginmodel设置为true 然后弹出toast 展示用户信息
+    const username = route.query.username;
+    switchGithubLoginState(username);
+    message.success("登录成功");
+
+    console.log("OAuth parameter is true. Performing the action.");
+  }
 });
 </script>
 

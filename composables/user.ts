@@ -40,6 +40,12 @@ export const useUser = defineStore(
       }
     };
 
+    // github第三方登录 切换状态
+    const switchGithubLoginState = async (username: string) => {
+      isLogin.value = true;
+      personalInfo.value.username = username;
+    };
+
     // 退出登录
     const logout = () => {
       clearInfo();
@@ -56,6 +62,7 @@ export const useUser = defineStore(
     };
     return {
       switchLoginState,
+      switchGithubLoginState,
       token,
       isLogin,
       personalInfo,
