@@ -52,10 +52,7 @@ onMounted(() => {
     </div>
     <!-- 热门课程 -->
     <div class="two-card-container">
-      <CardContainer :title="cardList[0].name" :choice-card="0" :sub-titles="[cardList[0].summay]" :cards="cardList[0].product_list">
-        <!-- 卷王排行榜 -->
-        <LearnRankList />
-      </CardContainer>
+      <CardContainer :title="cardList[0].name" :choice-card="0" :sub-titles="[cardList[0].summay]" :cards="cardList[0].product_list"> </CardContainer>
     </div>
     <!-- 新课上线 -->
     <div class="two-card-container">
