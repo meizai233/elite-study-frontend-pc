@@ -64,17 +64,6 @@ onMounted(() => {
         <HotProduct />
       </CardContainer>
     </div>
-    <!-- 中级后端工程师 -->
-    <div class="two-card-container">
-      <CardContainer :title="cardList[2].name" :choice-card="0" :sub-titles="[cardList[2].summay]" :cards="cardList[2].product_list">
-        <!-- 阿里云海报和活动轮播图 -->
-        <AliYun />
-      </CardContainer>
-    </div>
-    <!-- 高级前端技术栈 -->
-    <div class="card-container">
-      <CardContainer :title="cardList[3].name" :choice-card="1" :sub-titles="[cardList[3].summay]" :cards="cardList[3].product_list" />
-    </div>
     <!-- 讲师介绍 -->
     <div class="card-container" h-401px>
       <AboutInstructor />

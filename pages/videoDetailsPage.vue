@@ -6,7 +6,7 @@ import OutLine from "./videoDetailsPage/OutLine.vue";
 // 课程等级映射
 const levelMap = { JUNIOR: "初级", MIDDLE: "中级", SENIOR: "高级" };
 
-const { checkPay, videoInfor } = $(useVideo());
+let { checkPay, videoPrice, easyPoint, logicPoint, contentPoint, orderState } = $(useVideo());
 
 // tab选中状态
 const activeKey = $ref(0);
@@ -21,10 +21,10 @@ checkPay(realVideoId);
 // 课程详情数据
 const detailsData = reactive((await getVideoDetails(realVideoId)).data);
 // 将课程的评分数据暂存在pinia
-videoInfor.videoPrice = Number(detailsData.amount);
-videoInfor.easyPoint = Number(detailsData.easy_point);
-videoInfor.logicPoint = Number(detailsData.logic_point);
-videoInfor.contentPoint = Number(detailsData.content_point);
+videoPrice = Number(detailsData.amount);
+easyPoint = Number(detailsData.easy_point);
+logicPoint = Number(detailsData.logic_point);
+contentPoint = Number(detailsData.content_point);
 
 // 学员学习动态
 const latestLearnData = reactive((await getLatestLearn(1)).data);
@@ -38,6 +38,16 @@ const inlineHtml = (html: string) => {
 };
 // 当前页的title
 useHead({ title: "小滴课堂 - 视频详情页" });
+
+// 去购买页面
+const toPayPage = () => {
+  navigateTo(`/payPage?id=${realVideoId}`);
+};
+
+// 去播放页面
+const toVideoPlayPage = () => {
+  navigateTo(`/videoPlayPage?id=${realVideoId}`);
+};
 </script>
 
 <template>
@@ -76,9 +86,9 @@ useHead({ title: "小滴课堂 - 视频详情页" });
             <img src="/images/svg/play.svg" w-32px h-32px />
             <span text-18px color-white font-600>点击试看</span>
           </div>
-          <img class="try-click" :src="detailsData.cover_img" />
-          <span class="btn yellow" v-if="videoInfor.orderState">立即学习</span>
-          <span class="btn" v-else>购买</span>
+          <img class="try-click" :src="detailsData.cover_img" @click="toVideoPlayPage" />
+          <span class="btn yellow" v-if="orderState">立即学习</span>
+          <span class="btn" v-else @click="toPayPage">购买</span>
         </div>
       </div>
 

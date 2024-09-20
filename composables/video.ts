@@ -10,7 +10,6 @@ export const useVideo = defineStore("video", () => {
     videoPrice: null,
     easyPoint: null,
     logicPoint: null,
-    contentPoint: null,
   });
   // 检查课程是否购买
   const checkPay = async (id: number) => {
@@ -20,7 +19,7 @@ export const useVideo = defineStore("video", () => {
   };
 
   return {
-    videoInfor,
+    ...toRefs(videoInfor),
     checkPay,
   };
 });
