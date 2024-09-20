@@ -37,20 +37,18 @@ const getChapterList = async () => {
  * 集数选择
  */
 const sectionClick = async (val: any) => {
-  await getVideoData(val.id);
+  await getVideoData(val.id, true);
 };
 
 /**
  * 视频源
  */
 const xdclassPlayer = $ref<{ newPlayer: (playSrc: string) => void }>();
-
-const getVideoData = async (id?: number) => {
+const getVideoData = async (id?: number, clickChose?: boolean) => {
   const res = await getVideo({ episodeId: id });
-  debugger;
   if (res.code === 0) {
     _episodeId = id;
-    navigateTo(`videoPlayPage?id=${realVideoId}&eid=${id}`);
+    clickChose && navigateTo(`videoPlayPage?id=${realVideoId}&eid=${id}`);
     xdclassPlayer?.newPlayer(res.data.playResult);
   }
 };

@@ -37,7 +37,7 @@ const inlineHtml = (html: string) => {
   return html;
 };
 // 当前页的title
-useHead({ title: "小滴课堂 - 视频详情页" });
+useHead({ title: "优研平台 - 视频详情页" });
 
 // 去购买页面
 const toPayPage = () => {
@@ -101,7 +101,7 @@ const toVideoPlayPage = () => {
                 <img w-100px h-100px class="rounded-50%" :src="detailsData?.teacherDetail?.head_img" />
                 <div flex flex-col ml-18px justify-center>
                   <div text-24px color="#222222" font-800>{{ detailsData?.teacherDetail?.name }}</div>
-                  <div text-16px color="#404040" mb-12px w-126px>小滴课堂讲师</div>
+                  <div text-16px color="#404040" mb-12px w-126px>优研平台讲师</div>
                 </div>
                 <div ml-35px color="#404040">个人简介： {{ detailsData?.teacherDetail?.profile }}</div>
               </div>
