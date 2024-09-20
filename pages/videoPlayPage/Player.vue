@@ -1,6 +1,17 @@
 <script lang="ts" setup>
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+import { IChapter } from "~/types/api";
+
+const { productId, episodeId, chapterList } = defineProps<{
+  productId: number;
+  episodeId: number;
+  chapterList: any;
+}>();
+
+const emit = defineEmits<{
+  (e: "getVideoData", value: number): void;
+}>();
 
 /**
  * 实例化播放器
@@ -8,21 +19,40 @@ import "video.js/dist/video-js.css";
 let myPlay = $ref(null);
 let player: videojs.Player | null = null;
 let newPlayer = async (playSrc: string) => {
-  // 服务端渲染时机时终止
   if (process.server) return;
-  // 防止重复实例化播放器
   if (!player) {
     player = videojs(myPlay, {
       controls: true, // 控制器
       fill: true, // 填充模式
       playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2.0],
     });
+    player.on("loadedmetadata", () => player.play());
+    player.on("ended", nextEpisod);
   }
   player.src({
     src: playSrc,
     type: "application/x-mpegURL", // 流设置: m3u8
   });
 };
+
+// 视频播放结束自动切换本章下一集
+function nextEpisod() {
+  (chapterList as IChapter[]).forEach((item) => {
+    item.episodeList.forEach((subItem, subIndex) => {
+      if (episodeId !== subItem.id) return;
+      if (subIndex + 1 < item.episodeList.length) {
+        emit("getVideoData", item.episodeList[subIndex + 1].id);
+      } else {
+        // 跨章时暂停
+      }
+    });
+  });
+}
+
+onBeforeUnmount(() => {
+  if (player) player.dispose();
+});
+
 defineExpose({ newPlayer });
 </script>
 
