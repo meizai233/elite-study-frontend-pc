@@ -5,6 +5,7 @@ import "video.js/dist/video-js.css";
 import { IChapter } from "~/types/api";
 import vueDanmaku from "vue3-danmaku/dist/vue3-danmaku.esm";
 import { listByEpisodeId, addDanmu } from "~/api/bulletScreen";
+import { message } from "ant-design-vue";
 
 const { productId, episodeId, chapterList } = defineProps<{
   productId: number;
@@ -19,15 +20,19 @@ const emit = defineEmits<{
 /**
  * 弹幕逻辑
  */
-let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>();
-let danmuTimer = $ref<NodeJS.Timer>();
-let oVideoPlayer: HTMLVideoElement;
-let danmuList = $ref([]);
+let { global } = $(useDanmuState()); // 弹幕开关
+let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>(); //弹幕插件
+let danmuTimer = $ref<NodeJS.Timer>(); //弹幕定时器
+let oVideoPlayer: HTMLVideoElement; //播放器dom
+let danmuList = $ref([]); //弹幕列表
 
 async function getDanmuData(push?: boolean) {
+  if (!global) return;
+
   const currentTime = Math.floor(oVideoPlayer.currentTime);
 
   if (!push) {
+    // 初始弹幕
     danmuList = (
       await listByEpisodeId({
         productId: productId,
@@ -37,6 +42,7 @@ async function getDanmuData(push?: boolean) {
       })
     ).data;
   } else {
+    // 弹幕增加
     await listByEpisodeId({
       productId: productId,
       episodeId: episodeId,
@@ -156,10 +162,6 @@ const onPlayerReady = async function () {
     player.play();
     // 设置播放速度
     player.playbackRate(playBackRate);
-    // 进度改变获取不同的弹幕
-    danmuTimer = setInterval(async () => {
-      await getDanmuData(true);
-    }, 10 * 1000);
     speed = true;
   });
 };
@@ -178,12 +180,66 @@ function nextEpisod() {
   });
 }
 
+const { personalInfo } = $(useUser());
+const { videoDanmuList, handleAddDanmu } = $(useSocket());
+
+// videoDanmuList增加时 把弹幕添加到danmaku
+// 监听videoDanmuList数据变化，增加弹幕
+watch(
+  () => videoDanmuList.length,
+  () => {
+    videoDanmuList.forEach((item) => {
+      danmakuRef.add(item);
+    });
+    videoDanmuList.length = 0;
+  }
+);
+// 监听弹幕开关变量控制显示隐藏
+watch(
+  () => global,
+  (val) => {
+    val ? danmakuRef.show() : danmakuRef.hide();
+  }
+);
+
+// 发送弹幕
+const sendDanmu = async function (danmuContent: string) {
+  if (!danmuContent) {
+    message.warn("请输入弹幕");
+    return;
+  }
+  const params = {
+    productId: productId,
+    episodeId: episodeId,
+    content: danmuContent,
+    playTime: oVideoPlayer.currentTime + Math.random() / 0.5,
+  };
+
+  // 增加弹幕接口
+  // 待办 那这个接口是用来干嘛的？？data好像没有用上
+  const data = await addDanmu(params);
+  if (data.code === 0) {
+    // socketio增加实时弹幕api
+
+    // 通过socketio触发服务端的bulletChat事件 将data传递过去
+    // 待办 那服务端接收后怎么处理呢
+    handleAddDanmu({
+      content: danmuContent,
+      channel: "video",
+      playTime: 0,
+      accountId: personalInfo.id,
+      head_img: personalInfo.head_img,
+    });
+  }
+};
+
 onBeforeUnmount(() => {
   if (player) player.dispose();
   if (danmuTimer) clearInterval(danmuTimer);
 });
 
-defineExpose({ newPlayer });
+// 把一个对象 一个方法暴露出来 供父组建调用
+defineExpose({ newPlayer, sendDanmu });
 
 // const danmuList = [
 //   {

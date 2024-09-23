@@ -14,7 +14,7 @@ import "ant-design-vue/es/message/style/css";
 import "ant-design-vue/es/notification/style/css";
 
 // socketio链接
-const { initialize } = useSocket();
+const { initialize } = $(useSocket());
 initialize();
 
 const { asyncUserInfo } = $(useUser());

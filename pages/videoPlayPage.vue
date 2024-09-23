@@ -43,7 +43,10 @@ const sectionClick = async (val: any) => {
 /**
  * 视频源
  */
-const xdclassPlayer = $ref<{ newPlayer: (playSrc: string) => void }>();
+const xdclassPlayer = $ref<{
+  newPlayer: (playSrc: string) => void;
+  sendDanmu: (playSrc: string) => void;
+}>();
 const getVideoData = async (id?: number, clickChose?: boolean) => {
   const res = await getVideo({ episodeId: id });
   if (res.code === 0) {
@@ -89,12 +92,25 @@ const navClick = (val: number) => {
   }
 };
 
+// 弹幕开关
+let { global } = $(useDanmuState());
+const switchDanmu = function () {
+  global: !global;
+};
+
+// 发送弹幕
+let danmuContent = $ref("");
+function sendDanmu() {
+  xdclassPlayer.sendDanmu(danmuContent);
+  danmuContent = "";
+}
+
 useHead({ title: "优研平台 - 视频播放" });
 </script>
 
 <template>
   <div wfull flexc flex-col>
-    <div wfull bg="#191917" absolute h-87vh :style="{ top: '90px' }" />
+    <div wfull bg="#191917" absolute h-91vh :style="{ top: '90px' }" />
 
     <!-- 左侧tab -->
     <div class="video-play" h-90vh>
@@ -127,6 +143,11 @@ useHead({ title: "优研平台 - 视频播放" });
             <Player ref="xdclassPlayer" :episode-id="_episodeId" :product-id="realVideoId" :chapter-list="chapterList" @get-video-data="getVideoData" />
           </ClientOnly>
         </div>
+        <div mt-18px class="danmu">
+          <img class="cursor-pointer h-25px bg-none mr" @click="switchDanmu()" :src="`/images/video_${global ? 'open' : 'close'}.png`" />
+          <a-input mr-25px rounded-5px @keypress.enter.native="sendDanmu()" v-model:value="danmuContent" placeholder="请输入你要发送的弹幕" />
+          <a-button @click="sendDanmu()">发送</a-button>
+        </div>
       </div>
     </div>
   </div>
@@ -139,7 +160,7 @@ useHead({ title: "优研平台 - 视频播放" });
   width: 360px;
   left: 140px;
   position: absolute;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 :deep(.video-js .vjs-next-control .vjs-icon-placeholder:before) {
