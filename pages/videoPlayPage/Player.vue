@@ -6,6 +6,7 @@ import { IChapter } from "~/types/api";
 import vueDanmaku from "vue3-danmaku/dist/vue3-danmaku.esm";
 import { listByEpisodeId, addDanmu } from "~/api/bulletScreen";
 import { message } from "ant-design-vue";
+import { add } from "~/api/account";
 
 const { productId, episodeId, chapterList } = defineProps<{
   productId: number;
@@ -232,10 +233,25 @@ const sendDanmu = async function (danmuContent: string) {
     });
   }
 };
+// 上报学习时长
+let timer = $ref<NodeJS.Timer>();
+onMounted(() => {
+  timer = setInterval(() => {
+    if (oVideoPlayer && !oVideoPlayer.paused) {
+      add({
+        productId: productId,
+        episodeId: episodeId,
+        duration: Math.floor(oVideoPlayer.currentTime),
+      });
+    }
+  }, 10 * 1000);
+});
 
+// 组件即将销毁时删除播放器、弹幕轮询、上报时长轮询
 onBeforeUnmount(() => {
   if (player) player.dispose();
   if (danmuTimer) clearInterval(danmuTimer);
+  if (timer) clearInterval(timer);
 });
 
 // 把一个对象 一个方法暴露出来 供父组建调用

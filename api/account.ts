@@ -58,3 +58,13 @@ export const updateUserInfo = async function (params: any) {
     body: params,
   });
 };
+/**
+ * 上报学习时长
+ * @param params 请求参数 productId-视频ID episodeId-集ID duration-视频时长
+ */
+export const add = async function (params: { productId: number; episodeId: number; duration: number }) {
+  return await useApi<null>("/user/v1/duration_record", {
+    method: "POST",
+    body: params,
+  });
+};

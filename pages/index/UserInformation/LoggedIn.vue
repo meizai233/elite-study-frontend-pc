@@ -1,6 +1,10 @@
 <script lang="ts" setup>
+import { getPlayRrecord } from "~~/api/account";
+import RecentStudy from "./RecentStudy.vue";
+
 const { personalInfo } = $(useUser());
-const activeKey = $ref(0);
+
+const res = (await getPlayRrecord({ page: 1, size: 4 })).data.current_data;
 </script>
 
 <template>
@@ -14,14 +18,20 @@ const activeKey = $ref(0);
           </div>
         </div>
         <div mt-8px mx-14px flexb class="text-12px text-#7f7f7f">
-          <span>{{ personalInfo.learn_time }}</span>
+          <span>学习时长：{{ (personalInfo.learn_time / 3600).toFixed(2) }}小时</span>
         </div>
 
         <div flex justify-center pl-14px pr-14px mt-15px>
-          <div flexc flex-col mb-10px cursor-pointer @click="activeKey = 0">
+          <div flexc flex-col mb-10px cursor-pointer>
             <span text-14px color="#4f555d">最近学习</span>
-            <span bg="#4f555d" w-24px h-2px v-show="activeKey === 0"></span>
+            <span bg="#4f555d" w-24px h-2px></span>
           </div>
+        </div>
+      </div>
+
+      <div mb-1 class="recent-study">
+        <div mt-2 v-for="item in res" :key="item.id">
+          <RecentStudy :title="item.product_title" :percent="Math.ceil((item.learn_ids.split(',')?.length / item.episode_num) * 100)" />
         </div>
       </div>
     </div>
