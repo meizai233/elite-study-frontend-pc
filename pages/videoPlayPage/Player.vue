@@ -71,11 +71,31 @@ let newPlayer = async (playSrc: string) => {
     player.on("pause", onPlayerPause); // 播放器暂停
     player.on("loadedmetadata", onPlayerReady); // 播放器加载完成
     player.on("ended", nextEpisod); // 播放器结束
+    player.on("seeked", onPlayerSeeked); //手动选择进度
+    // 视频尺寸改变 重新计算滚动距离
+    player.on("fullscreenchange", () => {
+      oDanmu.style.width = `${oVideoPlayer.offsetWidth}px`;
+      oDanmu.style.height = `${oVideoPlayer.offsetHeight}px`;
+      danmakuRef.resize();
+    });
   }
   player.src({
     src: playSrc,
     type: "application/x-mpegURL", // 流设置: m3u8
   });
+};
+
+const onPlayerSeeked = async function () {
+  if (danmuTimer) clearInterval(danmuTimer);
+  danmuList = [];
+  danmakuRef.stop();
+  danmakuRef.reset();
+  await getDanmuData();
+  danmakuRef.play();
+
+  danmuTimer = setInterval(async () => {
+    await getDanmuData(true);
+  }, 10 * 1000);
 };
 
 // 播放器暂停时 弹幕暂停 清空不断请求的弹幕循环定时器
