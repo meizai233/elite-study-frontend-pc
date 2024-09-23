@@ -11,6 +11,7 @@
         <a target="_blank">云服务器</a>
       </div>
       <HeaderSearch />
+      <NuxtLink to="/personal" ml-20px>个人中心</NuxtLink>
       <div>
         <div v-if="isLogin" flexc>
           <a-dropdown>
