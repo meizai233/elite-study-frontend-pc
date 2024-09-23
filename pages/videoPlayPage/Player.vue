@@ -52,18 +52,30 @@ async function getDanmuData(push?: boolean) {
 /**
  * 实例化播放器
  */
+let speed = false;
 let oVideo: HTMLVideoElement; // 获取video DOM
 let oDanmu: HTMLDivElement; // 获取弹幕 DOM
 let myPlay = $ref(null);
 let init = $ref(false); //控制弹幕展示时机 初始化为false
 let player: videojs.Player | null = null;
+// 获取缓存中的播放速度，否则为1
+let playBackRate = $ref(process.client ? (localStorage.getItem("playBackRate") ? Number(localStorage.getItem("playBackRate")) : 1) : 1);
+
 let newPlayer = async (playSrc: string) => {
   if (process.server) return;
   if (!player) {
+    await import("videojs-hotkeys");
     player = videojs(myPlay, {
       controls: true, // 控制器
       fill: true, // 填充模式
       playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2.0],
+      plugins: {
+        hotkeys: {
+          volumeStep: 0.1,
+          seekStep: 5,
+          enableModifiersForNumbers: false,
+        },
+      },
     });
     // 创建完player对象后
     init = true;
@@ -78,7 +90,15 @@ let newPlayer = async (playSrc: string) => {
       oDanmu.style.height = `${oVideoPlayer.offsetHeight}px`;
       danmakuRef.resize();
     });
+    player.on("ratechange", () => {
+      if (speed) {
+        process.client && localStorage.setItem("playBackRate", player.playbackRate().toString());
+        playBackRate = player.playbackRate();
+      }
+    });
   }
+  speed = false;
+
   player.src({
     src: playSrc,
     type: "application/x-mpegURL", // 流设置: m3u8
@@ -134,10 +154,13 @@ const onPlayerReady = async function () {
     oDanmu.style.pointerEvents = "none";
     // 视频自动播放
     player.play();
-
+    // 设置播放速度
+    player.playbackRate(playBackRate);
+    // 进度改变获取不同的弹幕
     danmuTimer = setInterval(async () => {
       await getDanmuData(true);
     }, 10 * 1000);
+    speed = true;
   });
 };
 
