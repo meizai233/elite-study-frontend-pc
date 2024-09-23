@@ -1,7 +1,10 @@
+import { pushScopeId } from 'nuxt/dist/app/compat/capi';
 <script lang="ts" setup>
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import { IChapter } from "~/types/api";
+import vueDanmaku from "vue3-danmaku/dist/vue3-danmaku.esm";
+import { listByEpisodeId, addDanmu } from "~/api/bulletScreen";
 
 const { productId, episodeId, chapterList } = defineProps<{
   productId: number;
@@ -14,9 +17,45 @@ const emit = defineEmits<{
 }>();
 
 /**
+ * 弹幕逻辑
+ */
+let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>();
+let danmuTimer = $ref<NodeJS.Timer>();
+let oVideoPlayer: HTMLVideoElement;
+let danmuList = $ref([]);
+
+async function getDanmuData(push?: boolean) {
+  const currentTime = Math.floor(oVideoPlayer.currentTime);
+
+  if (!push) {
+    danmuList = (
+      await listByEpisodeId({
+        productId: productId,
+        episodeId: episodeId,
+        endTime: currentTime + 10,
+        beginTime: currentTime,
+      })
+    ).data;
+  } else {
+    await listByEpisodeId({
+      productId: productId,
+      episodeId: episodeId,
+      endTime: currentTime + 10,
+      beginTime: currentTime,
+    }).then((item) => {
+      // 请求弹幕并推送到弹幕list
+      item.data.map((subItem) => danmakuRef.push(subItem));
+    });
+  }
+}
+
+/**
  * 实例化播放器
  */
+let oVideo: HTMLVideoElement; // 获取video DOM
+let oDanmu: HTMLDivElement; // 获取弹幕 DOM
 let myPlay = $ref(null);
+let init = $ref(false); //控制弹幕展示时机 初始化为false
 let player: videojs.Player | null = null;
 let newPlayer = async (playSrc: string) => {
   if (process.server) return;
@@ -26,12 +65,59 @@ let newPlayer = async (playSrc: string) => {
       fill: true, // 填充模式
       playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2.0],
     });
-    player.on("loadedmetadata", () => player.play());
-    player.on("ended", nextEpisod);
+    // 创建完player对象后
+    init = true;
+    player.on("play", onPlayerPlay); // 播放器开始
+    player.on("pause", onPlayerPause); // 播放器暂停
+    player.on("loadedmetadata", onPlayerReady); // 播放器加载完成
+    player.on("ended", nextEpisod); // 播放器结束
   }
   player.src({
     src: playSrc,
     type: "application/x-mpegURL", // 流设置: m3u8
+  });
+};
+
+// 播放器暂停时 弹幕暂停 清空不断请求的弹幕循环定时器
+const onPlayerPause = function () {
+  if (danmuTimer) clearInterval(danmuTimer);
+  danmakuRef?.pause();
+};
+
+// 播放器播放时 渲染弹幕
+const onPlayerPlay = function () {
+  if (danmuTimer) clearInterval(danmuTimer);
+  // 播放器播放时 设置一个定时器 每10秒钟获取一次弹幕
+
+  danmuTimer = setInterval(async () => {
+    await getDanmuData(true);
+  }, 10 * 1000);
+  danmakuRef?.Player();
+};
+
+// 播放器加载完成后 初始化dom？
+const onPlayerReady = async function () {
+  oVideo = document.querySelector(".vjs-tech") as HTMLVideoElement;
+  oVideoPlayer = document.querySelector("#video_wrapper div video") as HTMLVideoElement;
+
+  // 初始化弹幕
+  await getDanmuData();
+  oDanmu = document.querySelector("#_danmu") as HTMLDivElement;
+
+  nextTick(() => {
+    oDanmu.style.width = `${oVideo.offsetWidth}px`;
+    oDanmu.style.height = `${oVideo.offsetHeight}px`;
+    oDanmu.style.top = "0";
+    oDanmu.style.left = "0";
+    oDanmu.style.zIndex = "1000";
+    oDanmu.style.position = "absolute";
+    oDanmu.style.pointerEvents = "none";
+    // 视频自动播放
+    player.play();
+
+    danmuTimer = setInterval(async () => {
+      await getDanmuData(true);
+    }, 10 * 1000);
   });
 };
 
@@ -51,21 +137,60 @@ function nextEpisod() {
 
 onBeforeUnmount(() => {
   if (player) player.dispose();
+  if (danmuTimer) clearInterval(danmuTimer);
 });
 
 defineExpose({ newPlayer });
+
+// const danmuList = [
+//   {
+//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
+//     content: "啊实打实多多",
+//     style: "COMMON_1",
+//   },
+//   {
+//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
+//     content: "啊实打实多多",
+//     style: "COMMON_2",
+//   },
+//   {
+//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
+//     content: "啊实打实多多",
+//     style: "COMMON_3",
+//   },
+//   {
+//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
+//     content: "啊实打实多多",
+//     style: "COMMON_4",
+//   },
+//   {
+//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
+//     content: "啊实打实多多",
+//     style: "COMMON_5",
+//   },
+// ];
 </script>
 
 <template>
+  <!-- init初始化时 将弹幕瞬移到video-js中 相对位置移动过去 -->
+  <Teleport v-if="init" to=".video-js">
+    <div id="_danmu">
+      <vueDanmaku style="width: 100%; height: 100%" ref="danmakuRef" v-model:danmus="danmuList" :channels="5" :autoplay="false" :speeds="160" useSlot>
+        <template v-slot:dm="{ danmu }">
+          <div flex items-center>
+            <img :src="danmu.head_img" wh-25 rounded-full />
+            <span class="TEXT" :class="danmu.style">{{ danmu.content }}</span>
+          </div>
+        </template>
+      </vueDanmaku>
+    </div>
+  </Teleport>
   <video ref="myPlay" controls style="height: 100%; width: 100%" class="video-js vjs-default-skin vjs-big-play-centered" />
 </template>
 
 <style scoped>
 .TEXT {
-  font-size: 24px;
-  font-weight: bold;
-  color: transparent;
-  background-clip: text;
+  font-size: 20px;
 }
 
 .PLANT {
@@ -74,58 +199,22 @@ defineExpose({ newPlayer });
 }
 
 .COMMON_1 {
-  background-image: linear-gradient(90deg, #fdb34b 0%, #fbe36c 98.57142857142858%);
+  color: #7dfd4b;
 }
 
 .COMMON_2 {
-  background-image: linear-gradient(90deg, #5094ea 0%, #5d41ba 45.34285714285714%, #c669a0 98.57142857142858%);
+  color: #5094ea;
 }
 
 .COMMON_3 {
-  background-image: linear-gradient(90deg, #fdb34b 0%, #fbe36c 98.57142857142858%);
+  color: #fdb34b;
 }
 
 .COMMON_4 {
-  background-image: linear-gradient(90deg, #5094ea 0%, #5d41ba 45.34285714285714%, #c669a0 98.57142857142858%);
+  color: #ea50cb;
 }
 
 .COMMON_5 {
-  background-image: linear-gradient(90deg, #fe4d5f 0%, #ffc666 98.57142857142858%);
-}
-
-.VIP_1 {
-  background-image: linear-gradient(90deg, #785cc8 0%, #854edb 98.57142857142858%);
-}
-
-.VIP_2 {
-  background-image: linear-gradient(90deg, #254abd 0%, #7dabef 98.57142857142858%);
-}
-
-.VIP_3 {
-  background-image: linear-gradient(90deg, #cf45e7 0%, #d967e3 98.57142857142858%);
-}
-
-.VIP_4 {
-  background-image: linear-gradient(90deg, #fdb34b 0%, #fbe36c 98.57142857142858%);
-}
-
-.VIP_5 {
-  background-image: linear-gradient(90deg, #785cc8 0%, #854edb 98.57142857142858%);
-}
-
-.VIP_TRAIN_1 {
-  background-image: linear-gradient(90deg, #fcb64f 0%, #ffb105 98.57142857142858%);
-}
-
-.VIP_TRAIN_2 {
-  background-image: linear-gradient(0deg, #bb4444 0%, #f66d68 90.81349206349216%);
-}
-
-.TRAIN_1 {
-  background-image: linear-gradient(-180deg, #ecc27d 9.186507936507835%, #b76420 100%);
-}
-
-.TRAIN_2 {
-  background-image: linear-gradient(-180deg, #2e6ec4 9.186507936507835%, #4252c4 100%);
+  color: #ee1a30;
 }
 </style>
