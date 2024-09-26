@@ -13,6 +13,10 @@ import "swiper/css/pagination";
 import "ant-design-vue/es/message/style/css";
 import "ant-design-vue/es/notification/style/css";
 
+// socketio链接
+const { initialize } = $(useSocket());
+initialize();
+
 const { asyncUserInfo } = $(useUser());
 // 同步用户数据
 await asyncUserInfo();

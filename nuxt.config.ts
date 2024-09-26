@@ -2,10 +2,17 @@ import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      client_id: process.env.NUXT_PUBLIC_CLIENT_ID,
+      base_url: process.env.NUXT_PUBLIC_BASE_URL,
+    },
+  },
   modules: ["@unocss/nuxt", "@pinia/nuxt"],
   experimental: {
     reactivityTransform: true,
   },
+
   vite: {
     plugins: [
       Components({

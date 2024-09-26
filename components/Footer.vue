@@ -10,24 +10,15 @@ import { message } from "ant-design-vue";
         <div text-16px color="#4f555d" flexc flex-col font-normal class="footer-href">
           <div mb-10px>
             <a @click="message.warn('敬请期待')" mr-29px>网站地图</a>
-            <a @click="message.warn('敬请期待')" mr-29px>每日福利</a>
             <!-- <a href="#" mr-29px>联系讲师</a> -->
             <a @click="message.warn('敬请期待')" mr-29px>APP下载</a>
           </div>
-          <div flexc>
-            友情链接：
-            <a target="__blank" href="https://cn.bing.com/chrome/newtab">友情链接1&nbsp;&nbsp;</a>|&nbsp;&nbsp;
-            <a target="__blank" href="https://cn.bing.com/chrome/newtab">友情链接2&nbsp;&nbsp;</a>|&nbsp;&nbsp;
-            <a target="__blank" href="https://cn.bing.com/chrome/newtab"> 友情链接3&nbsp;&nbsp; </a>
-            |&nbsp;&nbsp;
-            <a target="__blank" href="https://cn.bing.com/chrome/newtab">友情链接3</a>
-          </div>
         </div>
         <div flex class="footer-qr">
-          <img src="/images/elite_gzh.jpg" class="w80px! h80px" mr-16px />
+          <!-- <img src="/images/elite_gzh.jpg" class="w80px! h80px" mr-16px /> -->
           <div flex justify-center flex-col text-18px font-light text="#4f555d">
-            <p>扫码关注</p>
-            <p>微信服务号</p>
+            <!-- <p>扫码关注</p>
+            <p>微信服务号</p> -->
           </div>
         </div>
       </div>

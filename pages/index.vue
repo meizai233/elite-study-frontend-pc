@@ -7,12 +7,30 @@ import { getCardList } from "~/api/card";
 import AliYun from "./index/AliYun.vue";
 import AboutInstructor from "./index/Instructor/AboutInstructor.vue";
 import BroadSide from "./index/BroadSide.vue";
+import { message } from "ant-design-vue";
 
 // 视频卡片列表请求接口
 const cardList = $ref((await getCardList()).data);
+const route = useRoute();
+let { loginModel } = $(useModel());
+const { switchGithubLoginState } = $(useUser());
 
 useHead({
   title: "优研平台 - 首页",
+});
+
+onMounted(() => {
+  // 获取路由查询参数
+  const oauthParam = route.query.oauth;
+  // 如果 oauth 参数为 true，则进行操作
+  if (oauthParam === "1") {
+    // loginmodel设置为true 然后弹出toast 展示用户信息
+    const username = route.query.username;
+    switchGithubLoginState(username);
+    message.success("登录成功");
+
+    console.log("OAuth parameter is true. Performing the action.");
+  }
 });
 </script>
 
@@ -34,28 +52,14 @@ useHead({
     </div>
     <!-- 热门课程 -->
     <div class="two-card-container">
-      <CardContainer :title="cardList[0].name" :choice-card="0" :sub-titles="[cardList[0].summay]" :cards="cardList[0].product_list">
-        <!-- 卷王排行榜 -->
-        <LearnRankList />
-      </CardContainer>
+      <CardContainer :title="cardList[0].name" :choice-card="0" :sub-titles="[cardList[0].summay]" :cards="cardList[0].product_list"> </CardContainer>
     </div>
     <!-- 新课上线 -->
     <div class="two-card-container">
       <CardContainer :title="cardList[1].name" :choice-card="0" :sub-titles="[cardList[1].summay]" :cards="cardList[1].product_list">
         <!-- 热销排行榜 -->
-        <HotProduct />
+        <!-- <HotProduct /> -->
       </CardContainer>
-    </div>
-    <!-- 中级后端工程师 -->
-    <div class="two-card-container">
-      <CardContainer :title="cardList[2].name" :choice-card="0" :sub-titles="[cardList[2].summay]" :cards="cardList[2].product_list">
-        <!-- 阿里云海报和活动轮播图 -->
-        <AliYun />
-      </CardContainer>
-    </div>
-    <!-- 高级前端技术栈 -->
-    <div class="card-container">
-      <CardContainer :title="cardList[3].name" :choice-card="1" :sub-titles="[cardList[3].summay]" :cards="cardList[3].product_list" />
     </div>
     <!-- 讲师介绍 -->
     <div class="card-container" h-401px>

@@ -12,15 +12,18 @@ export const useVideo = defineStore("video", () => {
     logicPoint: null,
     contentPoint: null,
   });
+
   // 检查课程是否购买
   const checkPay = async (id: number) => {
     if ((await queryPay(id)).code == 0) {
       videoInfor.orderState = true;
+    } else {
+      videoInfor.orderState = false;
     }
   };
 
   return {
-    videoInfor,
+    ...toRefs(videoInfor),
     checkPay,
   };
 });

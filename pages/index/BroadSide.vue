@@ -20,7 +20,7 @@ const data = computed(() => {
   if (!width) {
     return ["点", "击", "我", "查", "看"];
   } else {
-    return ["每日福利", "公众号", "联系讲师", "APP下载", "帮助中心"];
+    return ["公众号", "APP下载"];
   }
 });
 </script>

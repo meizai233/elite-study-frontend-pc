@@ -21,6 +21,7 @@ const onFinish = async () => {
   // 登录接口
   const res = await login({ phone: currentInfo.phone, password: currentInfo.password });
   if (res.code === 0) {
+    // 在这里 把token放在pinia 持久化 cookie中
     switchLoginState(res.data);
     loginModel = false;
     message.success("登录成功");

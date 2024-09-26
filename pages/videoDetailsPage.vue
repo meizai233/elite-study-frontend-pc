@@ -6,7 +6,7 @@ import OutLine from "./videoDetailsPage/OutLine.vue";
 // 课程等级映射
 const levelMap = { JUNIOR: "初级", MIDDLE: "中级", SENIOR: "高级" };
 
-const { checkPay, videoInfor } = $(useVideo());
+let { checkPay, videoPrice, easyPoint, logicPoint, contentPoint, orderState } = $(useVideo());
 
 // tab选中状态
 const activeKey = $ref(0);
@@ -21,10 +21,10 @@ checkPay(realVideoId);
 // 课程详情数据
 const detailsData = reactive((await getVideoDetails(realVideoId)).data);
 // 将课程的评分数据暂存在pinia
-videoInfor.videoPrice = Number(detailsData.amount);
-videoInfor.easyPoint = Number(detailsData.easy_point);
-videoInfor.logicPoint = Number(detailsData.logic_point);
-videoInfor.contentPoint = Number(detailsData.content_point);
+videoPrice = Number(detailsData.amount);
+easyPoint = Number(detailsData.easy_point);
+logicPoint = Number(detailsData.logic_point);
+contentPoint = Number(detailsData.content_point);
 
 // 学员学习动态
 const latestLearnData = reactive((await getLatestLearn(1)).data);
@@ -37,7 +37,17 @@ const inlineHtml = (html: string) => {
   return html;
 };
 // 当前页的title
-useHead({ title: "小滴课堂 - 视频详情页" });
+useHead({ title: "优研平台 - 视频详情页" });
+
+// 去购买页面
+const toPayPage = () => {
+  navigateTo(`/payPage?id=${realVideoId}`);
+};
+
+// 去播放页面
+const toVideoPlayPage = () => {
+  navigateTo(`/videoPlayPage?id=${realVideoId}`);
+};
 </script>
 
 <template>
@@ -60,7 +70,7 @@ useHead({ title: "小滴课堂 - 视频详情页" });
           <div class="price-message">
             <span text-20px color-white font-500>原价：{{ detailsData?.old_amount }}元</span>
             <span color="#efd3a2" text-24px font-500>优惠价：{{ detailsData?.amount }}元</span>
-            <img class="button ml-26px" src="/images/svg/wechat_large.svg" />
+            <!-- <img class="button ml-26px" src="/images/svg/wechat_large.svg" /> -->
           </div>
           <div class="video-message">
             <div>
@@ -76,9 +86,9 @@ useHead({ title: "小滴课堂 - 视频详情页" });
             <img src="/images/svg/play.svg" w-32px h-32px />
             <span text-18px color-white font-600>点击试看</span>
           </div>
-          <img class="try-click" :src="detailsData.cover_img" />
-          <span class="btn yellow" v-if="videoInfor.orderState">立即学习</span>
-          <span class="btn" v-else>购买</span>
+          <img class="try-click" :src="detailsData.cover_img" @click="toVideoPlayPage" />
+          <span class="btn yellow" v-if="orderState">立即学习</span>
+          <span class="btn" v-else @click="toPayPage">购买</span>
         </div>
       </div>
 
@@ -91,7 +101,7 @@ useHead({ title: "小滴课堂 - 视频详情页" });
                 <img w-100px h-100px class="rounded-50%" :src="detailsData?.teacherDetail?.head_img" />
                 <div flex flex-col ml-18px justify-center>
                   <div text-24px color="#222222" font-800>{{ detailsData?.teacherDetail?.name }}</div>
-                  <div text-16px color="#404040" mb-12px w-126px>小滴课堂讲师</div>
+                  <div text-16px color="#404040" mb-12px w-126px>优研平台讲师</div>
                 </div>
                 <div ml-35px color="#404040">个人简介： {{ detailsData?.teacherDetail?.profile }}</div>
               </div>
@@ -100,7 +110,6 @@ useHead({ title: "小滴课堂 - 视频详情页" });
               <li :class="[activeKey === 0 ? 'active' : '']" @click="activeKey = 0">课程介绍</li>
               <li :class="[activeKey === 1 ? 'active' : '']" @click="activeKey = 1">课程目录</li>
               <li :class="[activeKey === 2 ? 'active' : '']" @click="activeKey = 2">用户评价</li>
-              <li :class="[activeKey === 3 ? 'active' : '']" @click="activeKey = 3">课程资料</li>
             </ul>
 
             <div>
@@ -121,7 +130,7 @@ useHead({ title: "小滴课堂 - 视频详情页" });
         </div>
 
         <!-- 学员学习动态 -->
-        <div class="details-main-right">
+        <!-- <div class="details-main-right">
           <a-card class="video-learn" v-if="latestLearnData.length > 0">
             <template #title>
               <div flex items-center>
@@ -139,7 +148,7 @@ useHead({ title: "小滴课堂 - 视频详情页" });
               </swiper-slide>
             </swiper>
           </a-card>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

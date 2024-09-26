@@ -6,11 +6,11 @@ import dayjs from "dayjs";
 const { id } = defineProps<{ id: number }>();
 // 分页器默认数据
 const paginationData = reactive({ page: 1, total: 0, pageSize: 8 });
-const { videoInfor } = $(useVideo());
+const { contentPoint, easyPoint, logicPoint } = $(useVideo());
 
 // 评论列表接口请求
 let data = $ref<IComment>();
-// data = (await getComment({ page: paginationData.page, size: paginationData.pageSize, id })).data;
+data = (await getComment({ page: paginationData.page, size: paginationData.pageSize, id })).data;
 
 // 修改总数
 paginationData.total = data?.total_record || 0;
@@ -18,7 +18,7 @@ paginationData.total = data?.total_record || 0;
 // 分页器的切换重新请求接口数据
 const change = async (page: number) => {
   paginationData.page = page;
-  // data = data = (await getComment({ page, id, size: paginationData.pageSize })).data;
+  data = data = (await getComment({ page, id, size: paginationData.pageSize })).data;
 };
 </script>
 
@@ -28,26 +28,26 @@ const change = async (page: number) => {
       <div flex items-center mr-74px>
         <h2>综合<br />评分</h2>
         <h2 class="text-52px! color-#f38e48! ml-5px w-60px!">
-          {{ ((videoInfor.contentPoint + videoInfor.easyPoint + videoInfor.logicPoint) / 3).toFixed(2) }}
+          {{ ((contentPoint + easyPoint + logicPoint) / 3).toFixed(2) }}
         </h2>
       </div>
 
       <div class="vertical-line"></div>
 
       <div flexc flex-col ml-65px mr-65px font-500>
-        <span text-28px color="#f38e48">{{ videoInfor.contentPoint }}</span>
+        <span text-28px color="#f38e48">{{ contentPoint }}</span>
         <span text-20px color="#222222" w-87px>内容实用</span>
       </div>
       <div class="vertical-line"></div>
 
       <div flexc flex-col ml-65px mr-65px font-500>
-        <span text-28px color="#f38e48">{{ videoInfor.easyPoint }}</span>
+        <span text-28px color="#f38e48">{{ easyPoint }}</span>
         <span text-20px color="#222222" w-87px>简洁易懂</span>
       </div>
       <div class="vertical-line"></div>
 
       <div flexc flex-col ml-65px mr-65px font-500>
-        <span text-28px color="#f38e48">{{ videoInfor.logicPoint }}</span>
+        <span text-28px color="#f38e48">{{ logicPoint }}</span>
         <span text-20px color="#222222" w-87px>逻辑清晰</span>
       </div>
     </div>
