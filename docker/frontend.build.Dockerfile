@@ -10,7 +10,9 @@ RUN npm set registry https://registry.npmmirror.com
 RUN yarn config set registry https://registry.yarnpkg.com/
 RUN yarn cache clean
 RUN pwd
-RUN npm i --force
+# RUN echo "NPM Registry: $(npm get registry)"
+# RUN npm get registry && echo "NPM Registry: $(npm get registry)"
+RUN yarn install
 RUN yarn build
 RUN npm i pm2 -g
 
