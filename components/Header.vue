@@ -8,7 +8,6 @@
         </NuxtLink>
         <NuxtLink to="/">首页</NuxtLink>
         <NuxtLink to="/videoListPage">课程中心</NuxtLink>
-        <a target="_blank">云服务器</a>
       </div>
       <HeaderSearch />
       <NuxtLink to="/personal" ml-20px>个人中心</NuxtLink>
@@ -21,7 +20,9 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
-                  <span text-center>{{ personalInfo.username }}</span>
+                  <span text-center>
+                    <NuxtLink to="/personal">{{ personalInfo.username }}</NuxtLink>
+                  </span>
                 </a-menu-item>
                 <a-menu-item>
                   <span text-center @click="userLogout()">退出登录</span>

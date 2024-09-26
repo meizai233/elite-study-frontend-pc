@@ -70,7 +70,7 @@ const toVideoPlayPage = () => {
           <div class="price-message">
             <span text-20px color-white font-500>原价：{{ detailsData?.old_amount }}元</span>
             <span color="#efd3a2" text-24px font-500>优惠价：{{ detailsData?.amount }}元</span>
-            <img class="button ml-26px" src="/images/svg/wechat_large.svg" />
+            <!-- <img class="button ml-26px" src="/images/svg/wechat_large.svg" /> -->
           </div>
           <div class="video-message">
             <div>
@@ -110,7 +110,6 @@ const toVideoPlayPage = () => {
               <li :class="[activeKey === 0 ? 'active' : '']" @click="activeKey = 0">课程介绍</li>
               <li :class="[activeKey === 1 ? 'active' : '']" @click="activeKey = 1">课程目录</li>
               <li :class="[activeKey === 2 ? 'active' : '']" @click="activeKey = 2">用户评价</li>
-              <li :class="[activeKey === 3 ? 'active' : '']" @click="activeKey = 3">课程资料</li>
             </ul>
 
             <div>
@@ -131,7 +130,7 @@ const toVideoPlayPage = () => {
         </div>
 
         <!-- 学员学习动态 -->
-        <div class="details-main-right">
+        <!-- <div class="details-main-right">
           <a-card class="video-learn" v-if="latestLearnData.length > 0">
             <template #title>
               <div flex items-center>
@@ -149,7 +148,7 @@ const toVideoPlayPage = () => {
               </swiper-slide>
             </swiper>
           </a-card>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

@@ -58,7 +58,7 @@ onMounted(() => {
     <div class="two-card-container">
       <CardContainer :title="cardList[1].name" :choice-card="0" :sub-titles="[cardList[1].summay]" :cards="cardList[1].product_list">
         <!-- 热销排行榜 -->
-        <HotProduct />
+        <!-- <HotProduct /> -->
       </CardContainer>
     </div>
     <!-- 讲师介绍 -->

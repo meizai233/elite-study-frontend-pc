@@ -1,11 +1,10 @@
-import { pushScopeId } from 'nuxt/dist/app/compat/capi';
 <script lang="ts" setup>
+import { message } from "ant-design-vue";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import { IChapter } from "~/types/api";
 import vueDanmaku from "vue3-danmaku/dist/vue3-danmaku.esm";
 import { listByEpisodeId, addDanmu } from "~/api/bulletScreen";
-import { message } from "ant-design-vue";
 import { add } from "~/api/account";
 
 const { productId, episodeId, chapterList } = defineProps<{
@@ -14,24 +13,18 @@ const { productId, episodeId, chapterList } = defineProps<{
   chapterList: any;
 }>();
 
-const emit = defineEmits<{
-  (e: "getVideoData", value: number): void;
-}>();
-
+const emit = defineEmits<{ (e: "getVideoData", value: number): void }>();
 /**
  * 弹幕逻辑
  */
 let { global } = $(useDanmuState()); // 弹幕开关
-let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>(); //弹幕插件
-let danmuTimer = $ref<NodeJS.Timer>(); //弹幕定时器
-let oVideoPlayer: HTMLVideoElement; //播放器dom
-let danmuList = $ref([]); //弹幕列表
-
+let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>(); // 弹幕插件
+let danmuTimer = $ref<NodeJS.Timer>(); // 弹幕定时器
+let oVideoPlayer: HTMLVideoElement; // 播放器dom
+let danmuList = $ref([]); // 弹幕列表
 async function getDanmuData(push?: boolean) {
   if (!global) return;
-
   const currentTime = Math.floor(oVideoPlayer.currentTime);
-
   if (!push) {
     // 初始弹幕
     danmuList = (
@@ -63,11 +56,10 @@ let speed = false;
 let oVideo: HTMLVideoElement; // 获取video DOM
 let oDanmu: HTMLDivElement; // 获取弹幕 DOM
 let myPlay = $ref(null);
-let init = $ref(false); //控制弹幕展示时机 初始化为false
+let init = $ref(false); // 控制弹幕展示时机
 let player: videojs.Player | null = null;
 // 获取缓存中的播放速度，否则为1
 let playBackRate = $ref(process.client ? (localStorage.getItem("playBackRate") ? Number(localStorage.getItem("playBackRate")) : 1) : 1);
-
 let newPlayer = async (playSrc: string) => {
   if (process.server) return;
   if (!player) {
@@ -76,6 +68,7 @@ let newPlayer = async (playSrc: string) => {
       controls: true, // 控制器
       fill: true, // 填充模式
       playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2.0],
+      // 键盘事件
       plugins: {
         hotkeys: {
           volumeStep: 0.1,
@@ -84,19 +77,20 @@ let newPlayer = async (playSrc: string) => {
         },
       },
     });
-    // 创建完player对象后
     init = true;
+
     player.on("play", onPlayerPlay); // 播放器开始
     player.on("pause", onPlayerPause); // 播放器暂停
     player.on("loadedmetadata", onPlayerReady); // 播放器加载完成
     player.on("ended", nextEpisod); // 播放器结束
-    player.on("seeked", onPlayerSeeked); //手动选择进度
-    // 视频尺寸改变 重新计算滚动距离
+    player.on("seeked", onPlayerSeeked); // 手动选择进度
+    // 视频尺寸改变，重新计算滚动距离
     player.on("fullscreenchange", () => {
       oDanmu.style.width = `${oVideoPlayer.offsetWidth}px`;
       oDanmu.style.height = `${oVideoPlayer.offsetHeight}px`;
       danmakuRef.resize();
     });
+    // 改变播放速度
     player.on("ratechange", () => {
       if (speed) {
         process.client && localStorage.setItem("playBackRate", player.playbackRate().toString());
@@ -105,13 +99,13 @@ let newPlayer = async (playSrc: string) => {
     });
   }
   speed = false;
-
   player.src({
     src: playSrc,
     type: "application/x-mpegURL", // 流设置: m3u8
   });
 };
 
+// 当播放器手动选择进度
 const onPlayerSeeked = async function () {
   if (danmuTimer) clearInterval(danmuTimer);
   danmuList = [];
@@ -125,32 +119,30 @@ const onPlayerSeeked = async function () {
   }, 10 * 1000);
 };
 
-// 播放器暂停时 弹幕暂停 清空不断请求的弹幕循环定时器
+// 当播放器暂停的时候弹幕暂停
 const onPlayerPause = function () {
   if (danmuTimer) clearInterval(danmuTimer);
   danmakuRef?.pause();
 };
 
-// 播放器播放时 渲染弹幕
+// 当播放器播放时候渲染弹幕
 const onPlayerPlay = function () {
   if (danmuTimer) clearInterval(danmuTimer);
-  // 播放器播放时 设置一个定时器 每10秒钟获取一次弹幕
-
   danmuTimer = setInterval(async () => {
     await getDanmuData(true);
   }, 10 * 1000);
-  danmakuRef?.Player();
+  danmakuRef?.play();
 };
 
-// 播放器加载完成后 初始化dom？
+// 当播放器好的时候初始化dom
 const onPlayerReady = async function () {
   oVideo = document.querySelector(".vjs-tech") as HTMLVideoElement;
   oVideoPlayer = document.querySelector("#video_wrapper div video") as HTMLVideoElement;
 
-  // 初始化弹幕
   await getDanmuData();
   oDanmu = document.querySelector("#_danmu") as HTMLDivElement;
 
+  // 设置弹幕的显示位置
   nextTick(() => {
     oDanmu.style.width = `${oVideo.offsetWidth}px`;
     oDanmu.style.height = `${oVideo.offsetHeight}px`;
@@ -159,12 +151,12 @@ const onPlayerReady = async function () {
     oDanmu.style.zIndex = "1000";
     oDanmu.style.position = "absolute";
     oDanmu.style.pointerEvents = "none";
-    // 视频自动播放
-    player.play();
-    // 设置播放速度
-    player.playbackRate(playBackRate);
-    speed = true;
   });
+  // 视频自动播放
+  player.play();
+  // 设置播放速度
+  player.playbackRate(playBackRate);
+  speed = true;
 };
 
 // 视频播放结束自动切换本章下一集
@@ -184,7 +176,6 @@ function nextEpisod() {
 const { personalInfo } = $(useUser());
 const { videoDanmuList, handleAddDanmu } = $(useSocket());
 
-// videoDanmuList增加时 把弹幕添加到danmaku
 // 监听videoDanmuList数据变化，增加弹幕
 watch(
   () => videoDanmuList.length,
@@ -195,6 +186,7 @@ watch(
     videoDanmuList.length = 0;
   }
 );
+
 // 监听弹幕开关变量控制显示隐藏
 watch(
   () => global,
@@ -215,15 +207,10 @@ const sendDanmu = async function (danmuContent: string) {
     content: danmuContent,
     playTime: oVideoPlayer.currentTime + Math.random() / 0.5,
   };
-
   // 增加弹幕接口
-  // 待办 那这个接口是用来干嘛的？？data好像没有用上
   const data = await addDanmu(params);
   if (data.code === 0) {
     // socketio增加实时弹幕api
-
-    // 通过socketio触发服务端的bulletChat事件 将data传递过去
-    // 待办 那服务端接收后怎么处理呢
     handleAddDanmu({
       content: danmuContent,
       channel: "video",
@@ -233,6 +220,7 @@ const sendDanmu = async function (danmuContent: string) {
     });
   }
 };
+
 // 上报学习时长
 let timer = $ref<NodeJS.Timer>();
 onMounted(() => {
@@ -254,40 +242,10 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
-// 把一个对象 一个方法暴露出来 供父组建调用
 defineExpose({ newPlayer, sendDanmu });
-
-// const danmuList = [
-//   {
-//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
-//     content: "啊实打实多多",
-//     style: "COMMON_1",
-//   },
-//   {
-//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
-//     content: "啊实打实多多",
-//     style: "COMMON_2",
-//   },
-//   {
-//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
-//     content: "啊实打实多多",
-//     style: "COMMON_3",
-//   },
-//   {
-//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
-//     content: "啊实打实多多",
-//     style: "COMMON_4",
-//   },
-//   {
-//     head_img: "https://file.xdclass.net/user_file/2022/09/60027b661a6738f62d5b44834484477d.jpeg",
-//     content: "啊实打实多多",
-//     style: "COMMON_5",
-//   },
-// ];
 </script>
 
 <template>
-  <!-- init初始化时 将弹幕瞬移到video-js中 相对位置移动过去 -->
   <Teleport v-if="init" to=".video-js">
     <div id="_danmu">
       <vueDanmaku style="width: 100%; height: 100%" ref="danmakuRef" v-model:danmus="danmuList" :channels="5" :autoplay="false" :speeds="160" useSlot>

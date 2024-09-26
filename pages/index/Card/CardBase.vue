@@ -32,7 +32,7 @@ defineProps<IProps>();
 
 <style lang="less" scoped>
 .card-box {
-  width: 280px;
+  width: 290px;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
@@ -44,7 +44,7 @@ defineProps<IProps>();
 
     img {
       width: 100%;
-      height: 190px;
+      height: 164px;
       cursor: pointer;
       border-top-left-radius: 10px;
       border-top-right-radius: 10px;

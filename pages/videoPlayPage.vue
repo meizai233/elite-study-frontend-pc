@@ -95,7 +95,7 @@ const navClick = (val: number) => {
 // 弹幕开关
 let { global } = $(useDanmuState());
 const switchDanmu = function () {
-  global: !global;
+  global = !global;
 };
 
 // 发送弹幕
@@ -160,7 +160,7 @@ useHead({ title: "优研平台 - 视频播放" });
   width: 360px;
   left: 140px;
   position: absolute;
-  z-index: 1001;
+  z-index: 1000;
 }
 
 :deep(.video-js .vjs-next-control .vjs-icon-placeholder:before) {
@@ -292,7 +292,7 @@ useHead({ title: "优研平台 - 视频播放" });
     background-color: #20201e;
     color: #fff;
     position: absolute;
-    z-index: 1000;
+    z-index: 10011;
     left: 140px;
     height: 89.1%;
 
