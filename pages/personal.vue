@@ -4,7 +4,7 @@ import { IPage, IPlayRecord } from "~/types/api";
 import Avatar from "./Personal/Avatar.vue";
 import PersonalSettings from "./Personal/PersonalSettings.vue";
 
-const { personalInfo } = $(useUser());
+const { personalInfo, isLogin } = $(useUser());
 
 useHead({
   title: "优研平台 - 个人中心",
@@ -18,8 +18,9 @@ const getPlayRrecordData = async (page = 1) => {
   const res = await getPlayRrecord({ page: page, size: 5 });
   data.value = res.data;
 };
-await getPlayRrecordData();
-
+if (isLogin) {
+  await getPlayRrecordData();
+}
 // 计算播放进度的百分比
 const getProgress = function (item: IPlayRecord) {
   return Math.ceil((item.learn_ids.split(",")?.length / item.episode_num) * 100);

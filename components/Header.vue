@@ -10,7 +10,7 @@
         <NuxtLink to="/videoListPage">课程中心</NuxtLink>
       </div>
       <HeaderSearch />
-      <NuxtLink to="/personal" ml-20px>个人中心</NuxtLink>
+      <NuxtLink v-show="isLogin" to="/personal" ml-20px>个人中心</NuxtLink>
       <div>
         <div v-if="isLogin" flexc>
           <a-dropdown>

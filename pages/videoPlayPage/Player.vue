@@ -173,17 +173,19 @@ function nextEpisod() {
   });
 }
 
-const { personalInfo } = $(useUser());
+const { personalInfo, isLogin } = $(useUser());
 const { videoDanmuList, handleAddDanmu } = $(useSocket());
 
 // 监听videoDanmuList数据变化，增加弹幕
 watch(
   () => videoDanmuList.length,
   () => {
-    videoDanmuList.forEach((item) => {
-      danmakuRef.add(item);
-    });
-    videoDanmuList.length = 0;
+    if (isLogin) {
+      videoDanmuList.forEach((item) => {
+        danmakuRef.add(item);
+      });
+      videoDanmuList.length = 0;
+    }
   }
 );
 
@@ -224,15 +226,17 @@ const sendDanmu = async function (danmuContent: string) {
 // 上报学习时长
 let timer = $ref<NodeJS.Timer>();
 onMounted(() => {
-  timer = setInterval(() => {
-    if (oVideoPlayer && !oVideoPlayer.paused) {
-      add({
-        productId: productId,
-        episodeId: episodeId,
-        duration: Math.floor(oVideoPlayer.currentTime),
-      });
-    }
-  }, 10 * 1000);
+  if (isLogin) {
+    timer = setInterval(() => {
+      if (oVideoPlayer && !oVideoPlayer.paused) {
+        add({
+          productId: productId,
+          episodeId: episodeId,
+          duration: Math.floor(oVideoPlayer.currentTime),
+        });
+      }
+    }, 10 * 1000);
+  }
 });
 
 // 组件即将销毁时删除播放器、弹幕轮询、上报时长轮询
