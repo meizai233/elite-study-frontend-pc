@@ -38,6 +38,6 @@ export default defineNuxtConfig({
   build: {
     // 禁用指定的打包优化，本地启动需要删除@babel/runtime
     // "@babel/runtime"
-    transpile: ["lodash-es"],
+    transpile: ["lodash-es", "@babel/runtime"],
   },
 });
