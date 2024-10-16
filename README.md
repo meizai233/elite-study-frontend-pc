@@ -18,6 +18,7 @@
 
 - [x] 有效期内验证码 - 缓存至 redis
 - [x] 手机短信验证码登录
+- [x] github 第三方登录 保持会话
 - [x] 用户注册模块
 - [x] 用户登录模块（密码验证和短信验证）
 - [x] github workflow 实现前后端自动化集成和部署（dockerFile + yml 配置文件 + nginx + docker-compose）

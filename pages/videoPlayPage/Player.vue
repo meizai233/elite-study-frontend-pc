@@ -180,12 +180,10 @@ const { videoDanmuList, handleAddDanmu } = $(useSocket());
 watch(
   () => videoDanmuList.length,
   () => {
-    if (isLogin) {
-      videoDanmuList.forEach((item) => {
-        danmakuRef.add(item);
-      });
-      videoDanmuList.length = 0;
-    }
+    videoDanmuList.forEach((item) => {
+      danmakuRef.add(item);
+    });
+    videoDanmuList.length = 0;
   }
 );
 
@@ -218,7 +216,7 @@ const sendDanmu = async function (danmuContent: string) {
       channel: "video",
       playTime: 0,
       accountId: personalInfo.id,
-      head_img: personalInfo.head_img,
+      head_img: personalInfo.head_img || "https://elite-sudy.oss-cn-heyuan.aliyuncs.com/teacher_file/172714598600169.JPG",
     });
   }
 };

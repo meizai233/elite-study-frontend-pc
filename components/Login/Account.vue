@@ -53,6 +53,10 @@ const onFinish = async () => {
       <a-form-item>
         <button type="submit" bg="#4d555d" class="rounded-full btn center-text-36 w-300px text-white">立即登录</button>
       </a-form-item>
+      <div flex flex-col items-center justify-center>
+        <span color="#555555">—更多登录方式—</span>
+        <o-auth mb-8px />
+      </div>
     </a-form>
     <Bottom type="login" />
   </div>
