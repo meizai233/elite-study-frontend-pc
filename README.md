@@ -6,13 +6,9 @@
 
 前端 pc 界面
 
-- Nuxt + Unocss
+- Nuxt + Unocss + Vue3
   后端
-- Node + Express + Sequelize + MySQL + Redis + RabbitMQ
-
-小程序端
-
-- uni-app + vue3 + pinia
+- Node + Express + Sequelize + MySQL + Redis
 
 ## 目标功能
 
