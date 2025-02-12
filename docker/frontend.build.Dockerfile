@@ -9,7 +9,7 @@ RUN npm set registry https://registry.npmmirror.com
 RUN yarn config set registry https://registry.npmmirror.com/
 RUN yarn cache clean
 RUN npm install
-RUN npm build
+RUN npm run build
 RUN npm i pm2 -g
 
 # 启动
