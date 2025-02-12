@@ -1,8 +1,8 @@
-FROM node:latest
+FROM node:18-alpine
 #复制文件
-RUN mkdir /app 
-ADD ./ /app 
 WORKDIR /app
+COPY package*.json ./
+
 # 安装
 RUN npm set registry https://registry.npmmirror.com 
 # RUN yarn config set registry https://registry.yarnpkg.com/
