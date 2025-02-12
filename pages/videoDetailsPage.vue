@@ -98,7 +98,7 @@ const toVideoPlayPage = () => {
           <div class="video-introduce">
             <div style="box-shadow: 0px 0px 10px 0px #d5d5d5" p20px rounded-10px w-890px>
               <div flex>
-                <img w-100px h-100px class="rounded-50%" :src="detailsData?.teacherDetail?.head_img" />
+                <img w-130px h-100px class="rounded-50%" :src="detailsData?.teacherDetail?.head_img" />
                 <div flex flex-col ml-18px justify-center>
                   <div text-24px color="#222222" font-800>{{ detailsData?.teacherDetail?.name }}</div>
                   <div text-16px color="#404040" mb-12px w-126px>优研平台讲师</div>
@@ -107,9 +107,9 @@ const toVideoPlayPage = () => {
               </div>
             </div>
             <ul mt-41px grid grid-cols-6 ml-65px color="#4f555d" text-16px font-600 class="li" h-53px>
-              <li :class="[activeKey === 0 ? 'active' : '']" @click="activeKey = 0">课程介绍</li>
-              <li :class="[activeKey === 1 ? 'active' : '']" @click="activeKey = 1">课程目录</li>
-              <li :class="[activeKey === 2 ? 'active' : '']" @click="activeKey = 2">用户评价</li>
+              <li w-100px :class="[activeKey === 0 ? 'active' : '']" @click="activeKey = 0">课程介绍</li>
+              <li w-100px :class="[activeKey === 1 ? 'active' : '']" @click="activeKey = 1">课程目录</li>
+              <li w-100px :class="[activeKey === 2 ? 'active' : '']" @click="activeKey = 2">用户评价</li>
             </ul>
 
             <div>
