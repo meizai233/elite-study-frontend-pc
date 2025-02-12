@@ -1,4 +1,4 @@
-FROM node:latest
+FROM docker.1ms.run/node:18
 #复制文件
 WORKDIR /app
 COPY package*.json ./
