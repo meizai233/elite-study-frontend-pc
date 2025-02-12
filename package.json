@@ -5,7 +5,7 @@
     "dev": "nuxt dev --dotenv .env.local",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "npx nuxt prepare",
     "batsharp": "esno automation/batsharp.ts",
     "upload": "yarn batsharp && esno automation/upload.ts"
   },

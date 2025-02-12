@@ -4,9 +4,9 @@ RUN mkdir /app
 ADD ./ /app 
 WORKDIR /app
 # 安装
-RUN npm set registry https://registry.npmmirror.com 
+# RUN npm set registry https://registry.npmmirror.com 
 # RUN yarn config set registry https://registry.yarnpkg.com/
-RUN yarn config set registry https://registry.npmmirror.com/
+# RUN yarn config set registry https://registry.npmmirror.com/
 RUN yarn cache clean
 RUN npm install
 RUN npm run build
