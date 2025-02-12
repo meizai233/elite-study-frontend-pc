@@ -83,5 +83,5 @@ jobs:
             docker builder prune -f || handle_error "清理构建缓存失败" # 清理构建缓存
             docker-compose -f docker/docker-compose.frontend.yml down # 停止并删除所有服务的容器和网络
             docker-compose -f docker/docker-compose.frontend.yml down --rmi all
-            docker build -f docker/frontend.build.Dockerfile -t frontend-course-image . # 根据 Dockerfile 构建新的镜像并标记为 frontend-course-image
+            docker build -f docker/frontend.build.Dockerfile -t frontend-course-image --network=host . # 根据 Dockerfile 构建新的镜像并标记为 frontend-course-image
             docker-compose -f docker/docker-compose.frontend.yml up -d # 使用 docker-compose 启动服务，后台运行
