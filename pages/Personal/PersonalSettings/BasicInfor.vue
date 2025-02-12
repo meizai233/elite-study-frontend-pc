@@ -45,14 +45,14 @@ const cancel = () => {
       <span>昵称</span>
       <input v-model="formData.username" :disabled="disabled" :class="[!disabled && 'notDisable']" />
     </div>
-    <div class="sex">
+    <!-- <div class="sex">
       <span>性别</span>
       <span v-show="disabled">{{ ["女", "男"][formData.sex] }}</span>
       <a-radio-group v-model:value="formData.sex" v-show="!disabled">
         <a-radio :value="1">男</a-radio>
         <a-radio :value="0">女</a-radio>
       </a-radio-group>
-    </div>
+    </div> -->
     <div class="city">
       <span>城市</span>
       <input v-model="formData.city" :disabled="disabled" :class="[!disabled && 'notDisable']" />

@@ -2,6 +2,8 @@ import { message } from "ant-design-vue";
 import { defineStore } from "pinia";
 import { getUserInfo } from "~/api/account";
 
+// 什么时候读取到的cookie中的用户信息
+
 // 对user信息进行管理
 // 持久化存储 自动把user作为key 存放在cookies中
 export const useUser = defineStore(
@@ -29,13 +31,16 @@ export const useUser = defineStore(
     };
     // 同步登录信息
     const asyncUserInfo = async () => {
+      isLogin.value = true;
+
       if (token.value === "") {
         isLogin.value = false;
         return;
       }
       const userInfo = await getUserInfo();
       if (userInfo.code === 0) {
-        isLogin.value = true;
+        // isLogin.value = true;
+        // 这里 看看正常登录的
         personalInfo.value = { ...userInfo.data };
       }
     };

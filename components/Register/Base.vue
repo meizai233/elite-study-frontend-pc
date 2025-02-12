@@ -3,9 +3,13 @@
 import { message } from "ant-design-vue";
 import { register } from "~/api/account";
 import { sendCode } from "~/api/notify";
+import { login } from "~/api/account";
+import { loadNuxt } from "nuxt";
 
 // $到底是什么 待办
 const { changeToFinish } = $(useModel());
+let { switchLoginState } = $(useUser());
+let { loginModel } = $(useModel());
 
 const { registerCurrent } = defineProps<{ registerCurrent: { phone: string; code: string; captcha: string; accept: boolean } }>();
 
@@ -83,15 +87,22 @@ const onRegisterClick = async () => {
    */
   const data = await register({ phone: registerCurrent.phone, code: registerCurrent.code });
   if (data.code === 0) {
-    // 注册完成
-    clearInfo();
-    changeToFinish();
   } else {
     resetCaptchaSrc();
   }
+  await onLogin();
 
   clearInfo();
   changeToFinish();
+};
+
+const onLogin = async () => {
+  const res = await login({ phone: registerCurrent.phone, code: registerCurrent.code });
+  if (res.code === 0) {
+    switchLoginState(res.data);
+    loginModel = false;
+    // message.success("登录成功");
+  }
 };
 
 const onFinish = () => {

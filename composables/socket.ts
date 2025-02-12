@@ -17,7 +17,6 @@ export const useSocket = defineStore("socket", () => {
     socket.emit("bulletChat", data);
   };
 
-  // 待办 这个也没用上
   const onBulletChat = () => {
     // 监听bulletChat事件
     // 监听message事件 触发时增加弹幕过来
