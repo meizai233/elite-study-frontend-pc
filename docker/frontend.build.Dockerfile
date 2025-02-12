@@ -8,7 +8,7 @@ RUN npm set registry https://registry.npmmirror.com
 # RUN yarn config set registry https://registry.yarnpkg.com/
 RUN yarn config set registry https://registry.npmmirror.com/
 RUN yarn cache clean
-RUN npm install --registry https://registry.npmmirror.com/  
+RUN npm install --registry https://registry.npmmirror.com/ --ignore-engines
 RUN npm run build
 RUN npm i pm2 -g
 
