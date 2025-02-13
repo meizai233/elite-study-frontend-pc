@@ -61,5 +61,11 @@ jobs:
             # 检查镜像是否存在
             docker images | grep elite_study/frontend
 
-            # 启动服务
+            # 1. 创建网络（如果不存在）
+            docker network create nginx_network
+
+            # 2. 启动服务
             docker-compose -f docker/docker-compose.frontend.yml up -d
+
+            # 3. 验证网络连接
+            docker network inspect nginx_network
