@@ -1,8 +1,8 @@
-FROM docker.1ms.run/node:18
+FROM node:latest
 #复制文件
+RUN mkdir /app 
+ADD ./ /app 
 WORKDIR /app
-COPY package*.json ./
-
 # 安装
 RUN npm set registry https://registry.npmmirror.com 
 # RUN yarn config set registry https://registry.yarnpkg.com/
