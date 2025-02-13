@@ -44,15 +44,25 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # 登录阿里云镜像服务
-            docker login --username=${{ secrets.ALIYUN_USERNAME }} --password=${{ secrets.ALIYUN_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
-
-            # 删除旧镜像
-             docker rmi registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:latest || true
-
-            # 拉取最新镜像
-            docker pull registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:latest
-
-            # 使用 docker-compose 部署
-            cd ${{ secrets.REMOTE_TARGET }} # 进入目标目录
-            docker-compose -f docker/docker-compose.frontend.yml down || true # 停止并删除所有服务的容器和网络
-            docker-compose -f docker/docker-compose.frontend.yml up -d # 使用 docker-compose 启动服务，后台运行
+  docker login --username=${{ secrets.ALIYUN_USERNAME }} --password=${{ secrets.ALIYUN_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+  
+  # 删除旧镜像
+  docker rmi registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:latest || true
+  
+  # 拉取最新镜像
+  docker pull registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:latest
+  
+  # 使用 docker-compose 部署
+  cd ${{ secrets.REMOTE_TARGET }}
+  echo "Current directory: $(pwd)"
+  echo "Listing docker-compose file:"
+  cat docker/docker-compose.frontend.yml
+  
+  # 停止并清理
+  docker-compose -f docker/docker-compose.frontend.yml down --remove-orphans
+  
+  # 检查镜像是否存在
+  docker images | grep elite_study/frontend
+  
+  # 启动服务
+  docker-compose -f docker/docker-compose.frontend.yml up -d
