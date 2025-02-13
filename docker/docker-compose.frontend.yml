@@ -1,7 +1,7 @@
 version: "3"
 services:
   frontend-course:
-    image: frontend-course-image
+    image: registry.cn-hangzhou.aliyuncs.com/elite_study/frontend:latest
     restart: always
     container_name: frontend-course
     ports:
