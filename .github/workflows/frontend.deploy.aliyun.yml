@@ -59,7 +59,7 @@ jobs:
             cat docker/docker-compose.frontend.yml
 
             # 停止并清理
-            docker-compose -f docker/docker-compose.frontend.yml down --remove-orphans
+            docker-compose -f docker/docker-compose.frontend.yml down --remove-orphans || true
 
             # 检查镜像是否存在
             docker images | grep elite_study/frontend
