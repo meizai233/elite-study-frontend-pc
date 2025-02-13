@@ -62,10 +62,10 @@ jobs:
             docker images | grep elite_study/frontend
 
             # 1. 创建网络（如果不存在）
-            docker network create nginx_network
+            docker network create elite_study_nginx_network
 
             # 2. 启动服务
             docker-compose -f docker/docker-compose.frontend.yml up -d
 
             # 3. 验证网络连接
-            docker network inspect nginx_network
+            docker network inspect elite_study_nginx_network

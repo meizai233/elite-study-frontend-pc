@@ -7,7 +7,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      - elite_study_nginx_network # 将前端服务连接到 nginx_network
+      - elite_study_nginx_network # 将前端服务连接到 elite_study_nginx_network
 networks:
-  nginx_network:
+  elite_study_nginx_network:
     external: true
