@@ -1,15 +1,16 @@
 FROM node:16-alpine
+
 #复制文件
-RUN mkdir /app 
-ADD ./ /app 
+RUN mkdir /app
+ADD . /app
 WORKDIR /app
+
 # 安装
-RUN npm set registry https://registry.npmmirror.com 
-# RUN yarn config set registry https://registry.yarnpkg.com/
+RUN npm set registry https://registry.npmmirror.com
 RUN yarn config set registry https://registry.npmmirror.com/
 RUN yarn cache clean
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn build
 RUN npm i pm2 -g
 
 # 启动
