@@ -65,7 +65,7 @@ const cursor = $computed(() => {
       list-type="picture"
       :max-count="1"
       :show-upload-list="false"
-      :action="'http://127.0.0.1:8888/api/user/v1/update_img'"
+      :action="'https://elitestudy.fun/api/user/v1/update_img'"
       :before-upload="beforeUpload"
       @change="handleChange"
       :headers="{ authorization: `${token}` }"
