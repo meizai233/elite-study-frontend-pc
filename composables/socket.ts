@@ -5,7 +5,7 @@ export const useSocket = defineStore("socket", () => {
   let socket = $ref(null);
   let videoDanmuList = $ref([]);
   const initialize = () => {
-    // 建立传输链接 http://127.0.0.1:8888
+    // 建立传输链接 http://127.0.0.1
     socket = io("wss://elitestudy.fun"); // 如果WebSocket在根路径
     socket.on("connect", () => {
       // console.log("socketio已连接");
