@@ -68,7 +68,7 @@ export const useSocket = defineStore("socket", () => {
         duration: currentDuration,
         // timestamp: Date.now()
       });
-    }, 3000);
+    }, 10000);
   };
 
   const stopHeartbeat = () => {
