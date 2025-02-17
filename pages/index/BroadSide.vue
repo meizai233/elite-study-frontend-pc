@@ -6,7 +6,6 @@ const flag = $ref(false);
 
 const mouseenter = (i: number) => {
   if (!flag && !width) return;
-  console.log(1);
   indexShow = i;
   account = true;
 };

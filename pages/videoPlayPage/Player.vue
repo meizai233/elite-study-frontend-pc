@@ -5,7 +5,9 @@ import "video.js/dist/video-js.css";
 import { IChapter } from "~/types/api";
 import vueDanmaku from "vue3-danmaku/dist/vue3-danmaku.esm";
 import { listByEpisodeId, addDanmu } from "~/api/bulletScreen";
-import { add } from "~/api/account";
+// import { add } from "~/api/account";
+// socketio链接
+const { initialize, startHeartbeat, stopHeartbeat, cleanup, saveLocalProgress } = $(useSocket());
 
 const { productId, episodeId, chapterList } = defineProps<{
   productId: number;
@@ -22,6 +24,7 @@ let danmakuRef = $ref<InstanceType<typeof vueDanmaku>>(); // 弹幕插件
 let danmuTimer = $ref<NodeJS.Timer>(); // 弹幕定时器
 let oVideoPlayer: HTMLVideoElement; // 播放器dom
 let danmuList = $ref([]); // 弹幕列表
+
 async function getDanmuData(push?: boolean) {
   if (!global) return;
   const currentTime = Math.floor(oVideoPlayer.currentTime);
@@ -221,27 +224,15 @@ const sendDanmu = async function (danmuContent: string) {
   }
 };
 
-// 上报学习时长
-let timer = $ref<NodeJS.Timer>();
 onMounted(() => {
-  if (isLogin) {
-    timer = setInterval(() => {
-      if (oVideoPlayer && !oVideoPlayer.paused) {
-        add({
-          productId: productId,
-          episodeId: episodeId,
-          duration: Math.floor(oVideoPlayer.currentTime),
-        });
-      }
-    }, 10 * 1000);
-  }
+  initialize();
+  // 如果是视频页面，启动心跳
+  startHeartbeat(productId, episodeId, () => Math.floor(oVideoPlayer.currentTime || 0));
 });
 
-// 组件即将销毁时删除播放器、弹幕轮询、上报时长轮询
-onBeforeUnmount(() => {
-  if (player) player.dispose();
-  if (danmuTimer) clearInterval(danmuTimer);
-  if (timer) clearInterval(timer);
+onUnmounted(() => {
+  stopHeartbeat();
+  cleanup();
 });
 
 defineExpose({ newPlayer, sendDanmu });

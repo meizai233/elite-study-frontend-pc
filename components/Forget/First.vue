@@ -17,7 +17,6 @@ const rules = {
 
 // 表单提交
 const onFinish = async () => {
-  console.log("下一步");
   // 短信验证码发送接口
   const res = await sendCode({ phone: currentInfo.phone, captcha: currentInfo.captcha, type: "change" });
   if (res.code === 0) {

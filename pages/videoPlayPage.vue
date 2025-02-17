@@ -17,7 +17,6 @@ const navList = [
  * 视频状态管理
  */
 let _episodeId = $ref(Number(useRoute().query.eid));
-
 const realVideoId = $computed(() => {
   return Number(useRoute().query.id) || 1;
 });
