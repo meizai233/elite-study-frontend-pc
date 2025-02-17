@@ -24,8 +24,8 @@ data = (await getCategoryList()).data.map((item) => {
 <template>
   <div class="classify-container">
     <ul relative>
-      <li v-for="(item, idx) in data" :key="idx" relative @mouseenter="switchCategory(idx)" @mouseleave="showCategory = false">
-        {{ item.name }}
+      <li v-for="(father, idx) in data" :key="idx" relative @mouseenter="switchCategory(idx)" @mouseleave="showCategory = false">
+        {{ father.name }}
         <div absolute top-0 right-3 text="#a0a0a0" text-13px>
           <caret-right-outlined />
         </div>
@@ -36,7 +36,12 @@ data = (await getCategoryList()).data.map((item) => {
           <div>
             <span>基础课程</span>
             <div flex mt-2>
-              <p class="ml-4 text-12px cursor-pointer" v-for="(item, idx) in data[now]?.subCategoryList.filter((item) => item.level === 'junior')" :key="idx">
+              <p
+                class="ml-4 text-12px cursor-pointer"
+                v-for="(item, idx) in data[now]?.subCategoryList.filter((item) => item.level === 'junior')"
+                :key="idx"
+                @click="navigateTo(`/videoListPage?id=${data[now].id}&cid=${item.id}`)"
+              >
                 {{ item.name }}
               </p>
             </div>
@@ -44,7 +49,12 @@ data = (await getCategoryList()).data.map((item) => {
           <div mt-6>
             <span>进阶课程</span>
             <div flex mt-2>
-              <p class="ml-4 text-12px cursor-pointer" v-for="(item, idx) in data[now]?.subCategoryList.filter((item) => item.level === 'middle')" :key="idx">
+              <p
+                class="ml-4 text-12px cursor-pointer"
+                v-for="(item, idx) in data[now]?.subCategoryList.filter((item) => item.level === 'middle')"
+                :key="idx"
+                @click="navigateTo(`/videoListPage?id=${data[now].id}&cid=${item.id}`)"
+              >
                 {{ item.name }}
               </p>
             </div>

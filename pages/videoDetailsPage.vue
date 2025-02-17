@@ -16,7 +16,7 @@ const realVideoId = $computed(() => {
   return Number(useRoute().query.id) || 1;
 });
 // 检查课程是否购买
-checkPay(realVideoId);
+// checkPay(realVideoId);
 
 // 课程详情数据
 const detailsData = reactive((await getVideoDetails(realVideoId)).data);
